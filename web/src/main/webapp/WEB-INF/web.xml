@@ -1,0 +1,42 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         id="WebApp_ID" version="3.1">
+
+    <display-name>Library app</display-name>
+
+    <servlet>
+        <servlet-name>controller</servlet-name>
+        <servlet-class>com.petko.Controller</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>controller</servlet-name>
+        <url-pattern>/controller</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>com.petko.EncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <servlet-name>controller</servlet-name>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>AuthorizationFilter</filter-name>
+        <filter-class>com.petko.AuthorizationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthorizationFilter</filter-name>
+        <servlet-name>controller</servlet-name>
+    </filter-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>

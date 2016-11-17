@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache>
+    <!--<diskStore path="java.io.tmpdir"/>-->
+    <!--<defaultCache maxEntriesLocalHeap="100"
+                  eternal="true"
+                  timeToIdleSeconds="300"
+                  timeToLiveSeconds="600"
+                  overflowToDisk="false"
+                  diskPersistent="false"
+                  maxEntriesLocalDisk="10000000"
+                  diskExpiryThreadIntervalSeconds="600"
+                  memoryStoreEvictionPolicy="LRU">
+    </defaultCache>-->
+    <cache
+            name="com.petko.entities2.UsersEntity"
+            maxEntriesLocalHeap="10000"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600">
+        <persistence strategy="localTempSwap"/>
+    </cache>
+</ehcache>
