@@ -13,9 +13,9 @@ public class HibernateUtilLibrary {
 
     private static Logger log = Logger.getLogger(HibernateUtilLibrary.class);
 
-    private /*public*/ SessionFactory sessionFactory = null;
+    private SessionFactory sessionFactory = null;
 
-//    private final ThreadLocal sessions = new ThreadLocal();
+    private static ThreadLocal<Session> sessions = new ThreadLocal<>();
 
     private HibernateUtilLibrary() {
         try {
@@ -43,27 +43,33 @@ public class HibernateUtilLibrary {
         }
     }
 
-    /*public Session getSession () {
-        Session session = (Session) sessions.get();
+    public Session getSession() {
+        Session session = sessions.get();
         if (session == null) {
             session = sessionFactory.openSession();
             sessions.set(session);
         }
-
         return session;
-    }*/
+    }
 
-    public Session getSession () {
+    public void releaseSession(Session session) {
+        if (session != null) {
+            if (session.isOpen()) session.close();
+            sessions.remove();
+        }
+    }
+
+    /*public Session getSession () {
         Session session = sessionFactory.getCurrentSession();
-        if (/*session == null || */!session.isOpen()) {
+        if (*//*session == null || *//*!session.isOpen()) {
             session = sessionFactory.openSession();
 //            sessions.set(session);
         }
 
         return session;
-    }
+    }*/
 
-    public static synchronized HibernateUtilLibrary getHibernateUtil(){
+    public static synchronized HibernateUtilLibrary getHibernateUtil() {
         if (util == null){
             util = new HibernateUtilLibrary();
         }

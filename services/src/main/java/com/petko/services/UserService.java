@@ -11,7 +11,6 @@ import com.petko.managers.PoolManager;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +24,6 @@ public class UserService implements Service<UserEntityOLD> {
     private static UserService instance;
     private static UserDao userDao = UserDao.getInstance();
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
-//    private static SessionFactory sessionFactory = HibernateUtilLibrary.getHibernateUtil().sessionFactory;
 
     private UserService() {
     }
@@ -108,7 +106,8 @@ public class UserService implements Service<UserEntityOLD> {
             ExceptionsHandler.processException(request, e);
             return false;
         } finally {
-            if (currentSession != null && currentSession.isOpen()) currentSession.close();
+//            if (currentSession != null && currentSession.isOpen()) currentSession.close();
+            util.releaseSession(currentSession);
         }
     }
 
@@ -176,7 +175,8 @@ public class UserService implements Service<UserEntityOLD> {
             transaction.rollback();
             ExceptionsHandler.processException(request, e);
         }  finally {
-            if (currentSession != null && currentSession.isOpen()) currentSession.close();
+//            if (currentSession != null && currentSession.isOpen()) currentSession.close();
+            util.releaseSession(currentSession);
         }
         return result;
     }
