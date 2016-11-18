@@ -28,13 +28,13 @@ public class SearchBookForUserCommand extends AbstractCommand{
         BookService service = BookService.getInstance();
         HttpSession session = request.getSession();
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
-        Set<BookEntityOLD> searchBookForUser;
+        Set<BookEntityOLD> searchBookForUser = null;
         /**
          * if there is searchTextInBook parameter in request
          */
         String searchTextInBook;
         if ((searchTextInBook = request.getParameter("searchTextInBook")) != null && !"".equals(searchTextInBook)) {
-            searchBookForUser = service.searchBooksByTitleOrAuthor(request, searchTextInBook);
+//            searchBookForUser = service.searchBooksByTitleOrAuthor(request, searchTextInBook);
             session.setAttribute("searchBookForUser", searchBookForUser);
         }
         setForwardPage(request, page);

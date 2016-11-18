@@ -6,34 +6,27 @@ import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 public class BaseDao<T extends Entity> implements Dao<T> {
     private static Logger log = Logger.getLogger(BaseDao.class);
-    protected HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
-//    protected SessionFactory sessionFactory = HibernateUtilLibrary.getHibernateUtil().sessionFactory;
-    protected Session session;
-//    private Transaction transaction = null;
+    protected static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
+    protected static Session session;
 
     @Override
     public void saveOrUpdate(T entity) throws DaoException {
         try {
+            log.info("saveOrUpdate(): " + entity);
             session = util.getSession();
-//            session = sessionFactory.getCurrentSession();
-//            transaction = session.beginTransaction();
             session.saveOrUpdate(entity);
-            log.info("saveOrUpdate(entity): " + entity);
-//            transaction.commit();
-            log.info("Save or update (commit): " + entity);
+//            log.info("saveOrUpdate(entity): " + entity);
+//            log.info("Save or update (commit): " + entity);
         } catch (HibernateException e) {
-            String message = "Error save or update ENTITY in Dao";
+            String message = "Error save or update ENTITY in Dao.";
             log.error(message + e);
-//            transaction.rollback();
             throw new DaoException(message);
-        } finally {
-            session.close();
         }
     }
 
@@ -44,10 +37,34 @@ public class BaseDao<T extends Entity> implements Dao<T> {
 
     @Override
     public T getById(int id) throws DaoException {
-        return null;
+        log.info("Get ENTITY by id: " + id);
+        T entity;
+        try {
+            session = util.getSession();
+            entity = (T) session.get(getPersistentClass(), id);
+            log.info("get() clazz: " + entity);
+        } catch (HibernateException e) {
+            String message = "Error get() " + getPersistentClass() + " in BaseDao.";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+        return entity;
     }
 
     @Override
-    public void delete(int id) throws DaoException {
+    public void delete(T entity) throws DaoException {
+        try {
+            log.info("Delete ENTITY: " + entity);
+            session = util.getSession();
+            session.delete(entity);
+        } catch (IllegalArgumentException | HibernateException e) {
+            String message = "Error deleting " + getPersistentClass() + " in BaseDao.";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+    }
+
+    private Class getPersistentClass() {
+        return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 }

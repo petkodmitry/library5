@@ -34,7 +34,8 @@ public class SearchBookAdminCommand extends AbstractCommand {
         if (userService.isAdminUser(request, login)) {
             String searchTextInBook;
             if ((searchTextInBook = request.getParameter("searchTextInBook")) != null && !"".equals(searchTextInBook)) {
-                List<BookEntityOLD> searchBookAdmin = service.getAllBooksByTitleOrAuthor(request, searchTextInBook);
+                List<BookEntityOLD> searchBookAdmin = null;
+//                List<BookEntityOLD> searchBookAdmin = service.getAllBooksByTitleOrAuthor(request, searchTextInBook);
                 session.setAttribute("searchBookAdmin", searchBookAdmin);
             }
             setForwardPage(request, page);

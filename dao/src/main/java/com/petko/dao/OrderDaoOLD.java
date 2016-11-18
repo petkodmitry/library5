@@ -2,8 +2,8 @@ package com.petko.dao;
 
 import com.petko.DaoException;
 import com.petko.entities.OrderEntityOLD;
-import com.petko.entities.OrderStatus;
-import com.petko.entities.PlaceOfIssue;
+import com.petko.entities2.OrderStatus;
+import com.petko.entities2.PlaceOfIssue;
 import com.petko.managers.PoolManager;
 
 import java.sql.Connection;
@@ -212,7 +212,7 @@ public class OrderDaoOLD implements DaoOLD<OrderEntityOLD> {
 //            ResultSet result = null;
             try {
                 statement = connection.prepareStatement("UPDATE ORDERS SET (login, bid, status, placeofissue, startdate, enddate) VALUES (?, ?, ?, ?, ?, ?)");
-                statement.setString(1, entity.getLogin());
+                statement.setString(1, entity.getSubject());
                 statement.setInt(2, entity.getBookId());
                 statement.setString(3, entity.getStatus().toString());
                 statement.setString(4, entity.getPlaceOfIssue().toString());

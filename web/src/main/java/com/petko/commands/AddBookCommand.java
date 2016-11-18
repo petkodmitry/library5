@@ -39,7 +39,7 @@ public class AddBookCommand extends AbstractCommand {
                 if (!"".equals(title) && !"".equals(author)) {
                     regData.setTitle(title);
                     regData.setAuthor(author);
-                    service.add(request, regData);
+//                    service.add(request, regData);
                     if (regData.getBookId() != 0) {
                         request.setAttribute("info", "Книга добавлена в базу библиотеки");
                     }

@@ -19,7 +19,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
-public class UserService implements Service<UserEntityOLD> {
+public class UserService implements Service<UsersEntity> {
     private static Logger log = Logger.getLogger(UserService.class);
     private static UserService instance;
     private static UserDao userDao = UserDao.getInstance();
@@ -88,13 +88,12 @@ public class UserService implements Service<UserEntityOLD> {
         Transaction transaction = null;
         try {
             currentSession = util.getSession();
-//            currentSession = sessionFactory.getCurrentSession();
             transaction = currentSession.beginTransaction();
 
             UsersEntity user = userDao.getByLogin(login);
 
             transaction.commit();
-            log.info("get user by login (commit)");
+            log.info("Get user by login (commit)");
             if (user != null && password.equals(user.getPassword())) {
                 addToActiveUsers(login);
                 return true;
@@ -106,7 +105,6 @@ public class UserService implements Service<UserEntityOLD> {
             ExceptionsHandler.processException(request, e);
             return false;
         } finally {
-//            if (currentSession != null && currentSession.isOpen()) currentSession.close();
             util.releaseSession(currentSession);
         }
     }
@@ -153,7 +151,7 @@ public class UserService implements Service<UserEntityOLD> {
         Session currentSession = null;
         Transaction transaction = null;
         HttpSession httpSession = request.getSession();
-        int max = 3;
+        int max = 2;
         try {
             currentSession = util.getSession();
 //            currentSession = sessionFactory.getCurrentSession();
@@ -175,7 +173,6 @@ public class UserService implements Service<UserEntityOLD> {
             transaction.rollback();
             ExceptionsHandler.processException(request, e);
         }  finally {
-//            if (currentSession != null && currentSession.isOpen()) currentSession.close();
             util.releaseSession(currentSession);
         }
         return result;
@@ -233,7 +230,7 @@ public class UserService implements Service<UserEntityOLD> {
 
     public Set<UserEntityOLD> getUsersByBlock(HttpServletRequest request, boolean isBlocked) {
         Connection connection = null;
-        Set<UserEntityOLD> allByBlock = new HashSet<UserEntityOLD>();
+        Set<UserEntityOLD> allByBlock = new HashSet<>();
         try {
             connection = PoolManager.getInstance().getConnection();
 //            connection.setAutoCommit(false);
@@ -247,17 +244,17 @@ public class UserService implements Service<UserEntityOLD> {
         return allByBlock;
     }
 
-    public void add(UserEntityOLD entity) {}
+    public void add(UsersEntity entity) {}
 
-    public List<UserEntityOLD> getAll() {
+    public List<UsersEntity> getAll() {
         return null;
     }
 
-    public UserEntityOLD getByLogin(String login) {
+    public UsersEntity getByLogin(String login) {
         return null;
     }
 
-    public void update(UserEntityOLD entity) {
+    public void update(UsersEntity entity) {
 
     }
 

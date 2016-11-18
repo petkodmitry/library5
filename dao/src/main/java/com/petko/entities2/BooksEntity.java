@@ -1,25 +1,28 @@
 package com.petko.entities2;
 
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
+import javax.persistence.Table;
 
 @javax.persistence.Entity
-@Table(name = "books"/*, schema = "library5", catalog = ""*/)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Table(name = "books")
 public class BooksEntity extends Entity {
-    private int bid;
+    private int bookId;
     private String title;
     private String author;
-    private Boolean isbusy;
+    private Boolean isBusy;
 
     @Id
-    @Column(name = "bid", nullable = false)
-    public int getBid() {
-        return bid;
+    @Column(name = "bid", nullable = false, unique = true)
+    public int getBookId() {
+        return bookId;
     }
 
-    public void setBid(int bid) {
-        this.bid = bid;
+    public void setBookId(int bid) {
+        this.bookId = bid;
     }
 
     @Basic
@@ -45,12 +48,12 @@ public class BooksEntity extends Entity {
     @Basic
     @Type(type = "org.hibernate.type.NumericBooleanType")
     @Column(name = "isbusy", nullable = true)
-    public Boolean getIsbusy() {
-        return isbusy;
+    public Boolean getIsBusy() {
+        return isBusy;
     }
 
-    public void setIsbusy(Boolean isbusy) {
-        this.isbusy = isbusy;
+    public void setIsBusy(Boolean isbusy) {
+        this.isBusy = isbusy;
     }
 
     @Override
@@ -60,20 +63,25 @@ public class BooksEntity extends Entity {
 
         BooksEntity that = (BooksEntity) o;
 
-        if (bid != that.bid) return false;
+        if (bookId != that.bookId) return false;
         if (title != null ? !title.equals(that.title) : that.title != null) return false;
         if (author != null ? !author.equals(that.author) : that.author != null) return false;
-        if (isbusy != null ? !isbusy.equals(that.isbusy) : that.isbusy != null) return false;
+        if (isBusy != null ? !isBusy.equals(that.isBusy) : that.isBusy != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = bid;
+        int result = bookId;
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (author != null ? author.hashCode() : 0);
-        result = 31 * result + (isbusy != null ? isbusy.hashCode() : 0);
+        result = 31 * result + (isBusy != null ? isBusy.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Book [bookId=%d, title=%s, author=%s, isBusy=%b]", bookId, title, author, isBusy);
     }
 }

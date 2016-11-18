@@ -28,8 +28,8 @@
             <td><c:out value="${user.getLastName()}"/></td>
             <td><c:out value="${user.getLogin()}"/></td>
             <td><c:out value="${user.getPassword()}"/></td>
-            <td><c:out value="${user.getIsadmin()}"/></td>
-            <td><c:out value="${user.getIsblocked()}"/></td>
+            <td><c:out value="${user.getIsAdmin()}"/></td>
+            <td><c:out value="${user.getIsBlocked()}"/></td>
         </tr>
     </c:forEach>
     </tbody>

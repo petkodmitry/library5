@@ -1,27 +1,33 @@
 package com.petko.entities2;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Cache;
+
 import javax.persistence.*;
+import javax.persistence.Table;
 import java.util.Date;
 
 @javax.persistence.Entity
-@Table(name = "orders"/*, schema = "library5", catalog = ""*/)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Table(name = "orders")
 public class OrdersEntity extends Entity {
-    private int oid;
+    private int orderId;
     private String login;
-    private int bid;
-    private String status;
-    private String placeofissue;
-    private Date startdate;
-    private Date enddate;
+    private int bookId;
+    private OrderStatus status;
+    private PlaceOfIssue placeOfIssue;
+    private Date startDate;
+    private Date endDate;
 
     @Id
-    @Column(name = "oid", nullable = false)
-    public int getOid() {
-        return oid;
+    @Column(name = "oid", nullable = false, unique = true)
+    public int getOrderId() {
+        return orderId;
     }
 
-    public void setOid(int oid) {
-        this.oid = oid;
+    public void setOrderId(int oid) {
+        this.orderId = oid;
     }
 
     @Basic
@@ -36,54 +42,56 @@ public class OrdersEntity extends Entity {
 
     @Basic
     @Column(name = "bid", nullable = false)
-    public int getBid() {
-        return bid;
+    public int getBookId() {
+        return bookId;
     }
 
-    public void setBid(int bid) {
-        this.bid = bid;
+    public void setBookId(int bid) {
+        this.bookId = bid;
     }
 
     @Basic
+    @Type(type = "org.hibernate.type.StringType")
     @Column(name = "status", nullable = false, length = 20)
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
     @Basic
+    @Type(type = "org.hibernate.type.StringType")
     @Column(name = "placeofissue", nullable = false, length = 20)
-    public String getPlaceofissue() {
-        return placeofissue;
+    public PlaceOfIssue getPlaceOfIssue() {
+        return placeOfIssue;
     }
 
-    public void setPlaceofissue(String placeofissue) {
-        this.placeofissue = placeofissue;
+    public void setPlaceOfIssue(PlaceOfIssue placeofissue) {
+        this.placeOfIssue = placeofissue;
     }
 
-    //    @Basic
+    @Basic
     @Temporal(TemporalType.DATE)
     @Column(name = "startdate", nullable = false)
-    public Date getStartdate() {
-        return startdate;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setStartdate(Date startdate) {
-        this.startdate = startdate;
+    public void setStartDate(Date startdate) {
+        this.startDate = startdate;
     }
 
-//    @Basic
+    @Basic
     @Temporal(TemporalType.DATE)
     @Column(name = "enddate", nullable = false)
-    public Date getEnddate() {
-        return enddate;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setEnddate(Date enddate) {
-        this.enddate = enddate;
+    public void setEndDate(Date enddate) {
+        this.endDate = enddate;
     }
 
     @Override
@@ -93,26 +101,32 @@ public class OrdersEntity extends Entity {
 
         OrdersEntity that = (OrdersEntity) o;
 
-        if (oid != that.oid) return false;
-        if (bid != that.bid) return false;
+        if (orderId != that.orderId) return false;
+        if (bookId != that.bookId) return false;
         if (login != null ? !login.equals(that.login) : that.login != null) return false;
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
-        if (placeofissue != null ? !placeofissue.equals(that.placeofissue) : that.placeofissue != null) return false;
-        if (startdate != null ? !startdate.equals(that.startdate) : that.startdate != null) return false;
-        if (enddate != null ? !enddate.equals(that.enddate) : that.enddate != null) return false;
+        if (placeOfIssue != null ? !placeOfIssue.equals(that.placeOfIssue) : that.placeOfIssue != null) return false;
+        if (startDate != null ? !startDate.equals(that.startDate) : that.startDate != null) return false;
+        if (endDate != null ? !endDate.equals(that.endDate) : that.endDate != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = oid;
+        int result = orderId;
         result = 31 * result + (login != null ? login.hashCode() : 0);
-        result = 31 * result + bid;
+        result = 31 * result + bookId;
         result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (placeofissue != null ? placeofissue.hashCode() : 0);
-        result = 31 * result + (startdate != null ? startdate.hashCode() : 0);
-        result = 31 * result + (enddate != null ? enddate.hashCode() : 0);
+        result = 31 * result + (placeOfIssue != null ? placeOfIssue.hashCode() : 0);
+        result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
+        result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Order [orderId=%d, login=%s, bookId=%d, status=%s, startDate=%s, endDate=%s]",
+                orderId, login, bookId, status, startDate, endDate);
     }
 }

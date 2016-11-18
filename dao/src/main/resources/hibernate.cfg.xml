@@ -8,18 +8,14 @@
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="connection.username">root3</property>
         <property name="connection.password">1903</property>
-        <!--<property name="connection.username">root</property>-->
-        <!--<property name="connection.password">root</property>-->
         <property name="hibernate.connection.pool_size">10</property>
         <property name="hibernate.connection.isolation">2</property>
         <property name="show_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">validate</property>
 
-        <!--<property name="current_session_context_class">thread</property>-->
+        <property name="current_session_context_class">thread</property>
 
-        <!--<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</property>-->
-        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
-        <!--<property name="hibernate.cache.query_cache_factory">org.hibernate.cache.internal.StandardQueryCacheFactory</property>-->
+        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</property>
         <property name="hibernate.cache.use_query_cache">true</property>
         <property name="hibernate.cache.use_second_level_cache">true</property>
         <property name="net.sf.ehcache.configurationResourceName">/ehcache.xml</property>
@@ -27,6 +23,7 @@
         <mapping class="com.petko.entities2.BlacklistEntity"/>
         <mapping class="com.petko.entities2.BooksEntity"/>
         <mapping class="com.petko.entities2.OrdersEntity"/>
+        <mapping class="com.petko.entities2.SeminarsEntity"/>
         <mapping class="com.petko.entities2.UsersEntity"/>
     </session-factory>
 </hibernate-configuration>

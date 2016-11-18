@@ -12,7 +12,7 @@ public class BlacklistEntity extends Entity {
     private Boolean isblocked;
 
     @Id
-    @Column(name = "lid", nullable = false)
+    @Column(name = "lid", nullable = false, unique = true)
     public int getLid() {
         return lid;
     }

@@ -1,5 +1,8 @@
 package com.petko.entities;
 
+import com.petko.entities2.OrderStatus;
+import com.petko.entities2.PlaceOfIssue;
+
 import java.sql.Date;
 
 public class OrderEntityOLD extends EntityOLD {

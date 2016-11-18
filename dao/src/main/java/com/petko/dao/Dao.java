@@ -26,8 +26,8 @@ public interface Dao<T extends Entity> {
     T getById(int id) throws DaoException;
 
     /**
-     * deletes Entity by id
-     * @param id - id of deleting Entity
+     * deletes Entity
+     * @param entity - Entity to be deleted
      */
-    void delete(int id) throws DaoException;
+    void delete(T entity) throws DaoException;
 }

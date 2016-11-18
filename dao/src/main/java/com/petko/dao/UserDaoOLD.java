@@ -136,7 +136,7 @@ public class UserDaoOLD implements DaoOLD<UserEntityOLD> {
                     answer.setUserId(result.getInt(1));
 //                    answer.setFirstName(result.getString(2));
 //                    answer.setLastName(result.getString(3));
-//                    answer.setLogin(result.getString(4));
+//                    answer.setSubject(result.getString(4));
 //                    answer.setPassword(result.getString(5));
 //                    answer.setAdmin(result.getBoolean(6));
 //                    answer.setBlocked(result.getBoolean(7));
