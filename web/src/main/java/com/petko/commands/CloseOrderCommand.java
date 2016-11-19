@@ -30,11 +30,11 @@ public class CloseOrderCommand extends AbstractCommand{
 
         if (UserService.getInstance().isAdminUser(request, login)) {
             int orderId = Integer.parseInt(request.getParameter("orderId"));
-            OrderStatus status = service.getById(request, orderId).getStatus();
+            String status = service.getById(request, orderId).getStatus();
             service.closeOrder(request, null, orderId);
-            if (OrderStatus.ORDERED.equals(status)) {
+            if (OrderStatus.ORDERED.toString().equals(status)) {
                 WaitingOrdersCommand.getInstance().execute(request, response);
-            } else if (OrderStatus.ON_HAND.equals(status)) {
+            } else if (OrderStatus.ON_HAND.toString().equals(status)) {
                 OpenedOrdersCommand.getInstance().execute(request, response);
             }
         } else if ((request.getAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE)) == null) {

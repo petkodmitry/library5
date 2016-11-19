@@ -1,7 +1,5 @@
 package com.petko.vo;
 
-import com.petko.entities.PlaceOfIssue;
-
 import java.util.Date;
 
 public class OrderForMyOrdersList {
@@ -9,11 +7,12 @@ public class OrderForMyOrdersList {
     private int bookId;
     private String title;
     private String author;
-    private PlaceOfIssue place;
+//    private PlaceOfIssue place;
+    private String place;
     private Date startDate;
     private Date endDate;
 
-    public OrderForMyOrdersList(int orderId, int bookId, PlaceOfIssue place, Date startDate, Date endDate) {
+    public OrderForMyOrdersList(int orderId, int bookId, String place, Date startDate, Date endDate) {
         this.orderId = orderId;
         this.bookId = bookId;
 //        this.title = title;
@@ -47,7 +46,7 @@ public class OrderForMyOrdersList {
         return author;
     }
 
-    public PlaceOfIssue getPlace() {
+    public String getPlace() {
         return place;
     }
 

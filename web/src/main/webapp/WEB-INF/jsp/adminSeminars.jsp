@@ -45,7 +45,6 @@
     <BR><BR>${info}<BR>
 </c:if>
 
-<%--<c:if test="${seminarEntity != null && !seminarEntity.getUsers().isEmpty()}">--%>
 <c:if test="${seminarEntity != null}">
     <form>
         <table border="0">

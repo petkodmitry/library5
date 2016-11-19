@@ -51,7 +51,7 @@ public class SeminarsEntity extends Entity {
         this.seminarDate = startdate;
     }
 
-    @ManyToMany(/*targetEntity = UsersEntity.class, *//*mappedBy = "seminars"*/)
+    @ManyToMany
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinTable(name = "users_seminars"
             , joinColumns = @JoinColumn(name = "sid2")

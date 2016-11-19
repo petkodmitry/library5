@@ -1,10 +1,10 @@
 package com.petko.entities;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
+//import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -13,12 +13,17 @@ import java.util.Date;
 @Table(name = "orders")
 public class OrdersEntity extends Entity {
     private int orderId;
+//    private int userId;
     private String login;
     private int bookId;
-    private OrderStatus status;
-    private PlaceOfIssue placeOfIssue;
+//    private OrderStatus status;
+//    private PlaceOfIssue placeOfIssue;
+    private String status;
+    private String placeOfIssue;
     private Date startDate;
     private Date endDate;
+
+    private UsersEntity user;
 
     @Id
     @Column(name = "oid", nullable = false, unique = true)
@@ -50,7 +55,7 @@ public class OrdersEntity extends Entity {
         this.bookId = bid;
     }
 
-    @Basic
+    /*@Basic
     @Type(type = "org.hibernate.type.StringType")
     @Column(name = "status", nullable = false, length = 20)
     public OrderStatus getStatus() {
@@ -59,9 +64,19 @@ public class OrdersEntity extends Entity {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
-    }
+    }*/
 
     @Basic
+    @Column(name = "status", nullable = false, length = 20)
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /*@Basic
     @Type(type = "org.hibernate.type.StringType")
     @Column(name = "placeofissue", nullable = false, length = 20)
     public PlaceOfIssue getPlaceOfIssue() {
@@ -69,6 +84,16 @@ public class OrdersEntity extends Entity {
     }
 
     public void setPlaceOfIssue(PlaceOfIssue placeofissue) {
+        this.placeOfIssue = placeofissue;
+    }*/
+
+    @Basic
+    @Column(name = "placeofissue", nullable = false, length = 20)
+    public String getPlaceOfIssue() {
+        return placeOfIssue;
+    }
+
+    public void setPlaceOfIssue(String placeofissue) {
         this.placeOfIssue = placeofissue;
     }
 
@@ -92,6 +117,17 @@ public class OrdersEntity extends Entity {
 
     public void setEndDate(Date enddate) {
         this.endDate = enddate;
+    }
+
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "uid2")
+    public UsersEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UsersEntity user) {
+        this.user = user;
     }
 
     @Override

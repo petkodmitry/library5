@@ -1,12 +1,19 @@
 package com.petko.services;
 
+import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
+import com.petko.dao.BookDao;
+import com.petko.dao.OrderDao;
 import com.petko.entities.*;
 import com.petko.managers.PoolManager;
+import com.petko.utils.HibernateUtilLibrary;
 import com.petko.vo.FullOrdersList;
 import com.petko.vo.OrderForMyOrdersList;
 import com.petko.vo.AnyStatusOrdersList;
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.*;
@@ -15,6 +22,10 @@ import java.util.*;
 
 public class OrderService implements Service<OrdersEntity>{
     private static OrderService instance;
+    private static Logger log = Logger.getLogger(OrderService.class);
+    private static OrderDao orderDao = OrderDao.getInstance();
+    private static BookDao bookDao = BookDao.getInstance();
+    private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
     private OrderService() {}
 
@@ -25,7 +36,7 @@ public class OrderService implements Service<OrdersEntity>{
         return instance;
     }
 
-    public List<OrderForMyOrdersList> getOrdersByLoginAndStatus(HttpServletRequest request, String login, OrderStatus orderStatus) {
+    /*public List<OrderForMyOrdersList> getOrdersByLoginAndStatusOLD(HttpServletRequest request, String login, OrderStatus orderStatus) {
         List<OrderForMyOrdersList> result = new ArrayList<>();
         Connection connection = null;
         try {
@@ -45,11 +56,63 @@ public class OrderService implements Service<OrdersEntity>{
                 orderView.setAuthor(bookEntity.getAuthor());
                 result.add(orderView);
             }
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+        } catch (*//*DaoException |*//* SQLException | ClassNotFoundException e) {
             ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         } finally {
             PoolManager.getInstance().releaseConnection(connection);
+        }
+        return result;
+    }*/
+
+    /**
+     * getting orders list by login and order status
+     * @param request - current http request
+     * @param login - user, whose orders are taken
+     * @param orderStatus - with which status orders are taken
+     * @return the List of orders according to the conditions
+     */
+    public List<OrderForMyOrdersList> getOrdersByLoginAndStatus(HttpServletRequest request, String login, OrderStatus orderStatus) {
+        List<OrderForMyOrdersList> result = new ArrayList<>();
+        Session currentSession = null;
+        Transaction transaction = null;
+        try {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            List<OrdersEntity> orderEntityList = orderDao.getOrdersByLoginAndStatus(login, orderStatus);
+
+            if (!orderEntityList.isEmpty()) {
+                Set<Integer> bookIds = new HashSet<>();
+                for (OrdersEntity entity : orderEntityList) {
+                    bookIds.add(entity.getBookId());
+                }
+                List<BooksEntity> booksEntities = bookDao.getAllByCoupleIds(bookIds);
+                Map<Integer, BooksEntity> booksMap = new HashMap<>();
+                for (BooksEntity book : booksEntities) {
+                    booksMap.put(book.getBookId(), book);
+                }
+
+                for (OrdersEntity entity : orderEntityList) {
+                    int bookId = entity.getBookId();
+                    BooksEntity book = booksMap.get(bookId);
+                    OrderForMyOrdersList orderView = new OrderForMyOrdersList(entity.getOrderId(), bookId,
+                            entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
+                    orderView.setTitle(book.getTitle());
+                    orderView.setAuthor(book.getAuthor());
+                    result.add(orderView);
+                }
+                log.info("Get all books by couple ids (commit)");
+            }
+
+            transaction.commit();
+            log.info("Get orders by login and status (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
+            ExceptionsHandler.processException(request, e);
+            return Collections.emptyList();
+        } finally {
+            util.releaseSession(currentSession);
         }
         return result;
     }
@@ -116,7 +179,7 @@ public class OrderService implements Service<OrdersEntity>{
         return result;
     }
 
-    public void closeOrder(HttpServletRequest request, String login, int orderID) {
+    /*public void closeOrderOLD(HttpServletRequest request, String login, int orderID) {
         Connection connection = null;
         try {
             connection = PoolManager.getInstance().getConnection();
@@ -131,10 +194,49 @@ public class OrderService implements Service<OrdersEntity>{
             if (login == null && entity.getStatus().equals(OrderStatus.ON_HAND)) {
                 BookService.getInstance().setBookBusy(request, entity.getBookId(), false);
             }
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+        } catch (*//*DaoException |*//* SQLException | ClassNotFoundException e) {
             ExceptionsHandler.processException(request, e);
         } finally {
             PoolManager.getInstance().releaseConnection(connection);
+        }
+    }*/
+
+    public void closeOrder(HttpServletRequest request, String login, int orderID) {
+        Session currentSession = null;
+        Transaction transaction = null;
+        try {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            OrdersEntity entity = orderDao.getById(orderID);
+            log.info("Get order by id (commit)");
+//            OrdersEntity entity = OrderDaoOLD.getInstance().getById(connection, orderID);
+
+            // if User brought book to the Library, we mark Book as free
+            if (login == null && OrderStatus.ON_HAND.toString().equals(entity.getStatus())) {
+                BooksEntity book = bookDao.getById(entity.getBookId());
+                book.setIsBusy(false);
+                bookDao.saveOrUpdate(book);
+                log.info("Get book by id (commit)");
+                log.info("saveOrUpdate book (commit)");
+//                bookDao.setBookBusy(request, entity.getBookId(), false);
+            }
+            if ((login == null) ||
+                    (entity.getLogin().equals(login) && OrderStatus.ORDERED.toString().equals(entity.getStatus()))) {
+                entity.setStatus(OrderStatus.CLOSED.toString());
+                entity.setEndDate(new Date(Calendar.getInstance().getTime().getTime()));
+                orderDao.saveOrUpdate(entity);
+                log.info("saveOrUpdate order (commit)");
+//                orderDao.changeStatusOfOrder(orderID, OrderStatus.CLOSED);
+//                orderDao.changeEndDateOfOrder(orderID, new Date(Calendar.getInstance().getTime().getTime()));
+            }
+
+            transaction.commit();
+        } catch (DaoException e) {
+            transaction.rollback();
+            ExceptionsHandler.processException(request, e);
+        } finally {
+            util.releaseSession(currentSession);
         }
     }
 

@@ -2,16 +2,13 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.dao.SeminarDao;
 import com.petko.entities.SeminarsEntity;
-import com.petko.entities.UsersEntity;
 import com.petko.services.SeminarService;
 import com.petko.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Set;
 
 public class UsersOfSeminarCommand extends AbstractCommand {
     private static UsersOfSeminarCommand instance;
@@ -35,8 +32,6 @@ public class UsersOfSeminarCommand extends AbstractCommand {
 
         if (userService.isAdminUser(request, login)) {
             Integer seminarId = Integer.parseInt(request.getParameter("seminarId"));
-//            Set<UsersEntity> usersOfSeminar = service.getUsersBySeminar(request, seminarId);
-//            session.setAttribute("usersOfSeminar", usersOfSeminar);
             SeminarsEntity seminarEntity = service.getById(request, seminarId);
             session.setAttribute("seminarEntity", seminarEntity);
             setForwardPage(request, page);

@@ -2,9 +2,12 @@ package com.petko.dao;
 
 import com.petko.DaoException;
 import com.petko.entities.Entity;
+import com.petko.entities.UsersEntity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 import java.lang.reflect.ParameterizedType;
@@ -22,7 +25,7 @@ public class BaseDao<T extends Entity> implements Dao<T> {
             session = util.getSession();
             session.saveOrUpdate(entity);
         } catch (HibernateException e) {
-            String message = "Error save or update ENTITY in Dao.";
+            String message = "Error save or update " + entity + " in Dao.";
             log.error(message + e);
             throw new DaoException(message);
         }
@@ -30,7 +33,38 @@ public class BaseDao<T extends Entity> implements Dao<T> {
 
     @Override
     public List<T> getAll(int first, int max) throws DaoException {
-        return null;
+        List<T> result;
+        try {
+            session = util.getSession();
+            Criteria criteria = session.createCriteria(getPersistentClass());
+            criteria.setCacheable(true);
+            criteria.setFirstResult(first);
+            criteria.setMaxResults(max);
+            result = criteria.list();
+            log.info("getAll " + getPersistentClass().getName() + ". Count=" + result.size());
+        } catch (HibernateException e) {
+            String message = "Error getAll " + getPersistentClass().getName() + " in BaseDao";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+        return result;
+    }
+
+    public Long getTotal() throws DaoException{
+        Long result;
+        try {
+            session = util.getSession();
+            String hql = "SELECT count(id) FROM " + getPersistentClass().getSimpleName();
+            Query query = session.createQuery(hql);
+            query.setCacheable(true);
+            result = (Long) query.uniqueResult();
+            log.info("getTotal " + getPersistentClass().getSimpleName() + ". Count=" + result);
+        } catch (HibernateException e) {
+            String message = "Error getTotal " + getPersistentClass().getSimpleName() + " in BaseDao";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+        return result;
     }
 
     @Override

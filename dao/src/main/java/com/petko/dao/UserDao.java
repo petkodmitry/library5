@@ -3,11 +3,8 @@ package com.petko.dao;
 import com.petko.DaoException;
 import com.petko.entities.UsersEntity;
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-
-import java.util.List;
 
 public class UserDao extends BaseDao<UsersEntity> {
     private static Logger log = Logger.getLogger(UserDao.class);
@@ -40,7 +37,7 @@ public class UserDao extends BaseDao<UsersEntity> {
         return result;
     }
 
-    @Override
+    /*@Override
     public List<UsersEntity> getAll(int first, int max) throws DaoException{
         List<UsersEntity> result;
         try {
@@ -59,9 +56,9 @@ public class UserDao extends BaseDao<UsersEntity> {
             throw new DaoException(message);
         }
         return result;
-    }
+    }*/
 
-    public Long getTotal() throws DaoException{
+    /*public Long getTotal() throws DaoException{
         Long result;
         try {
             session = util.getSession();
@@ -76,5 +73,5 @@ public class UserDao extends BaseDao<UsersEntity> {
             throw new DaoException(message);
         }
         return result;
-    }
+    }*/
 }

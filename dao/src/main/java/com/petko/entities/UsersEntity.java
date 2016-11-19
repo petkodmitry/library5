@@ -20,6 +20,8 @@ public class UsersEntity extends Entity {
     private String password;
     private Boolean isAdmin;
     private Boolean isBlocked;
+
+    private Set<OrdersEntity> orders = new HashSet<>();
     private Set<SeminarsEntity> seminars = new HashSet<>();
 
     @Id
@@ -94,7 +96,16 @@ public class UsersEntity extends Entity {
         this.isBlocked = isblocked;
     }
 
-    @ManyToMany/*(targetEntity = SeminarsEntity.class)*/
+    @OneToMany(mappedBy = "user")
+    public Set<OrdersEntity> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<OrdersEntity> orders) {
+        this.orders = orders;
+    }
+
+    @ManyToMany
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinTable(name = "users_seminars"
             , joinColumns = @JoinColumn(name = "uid2")

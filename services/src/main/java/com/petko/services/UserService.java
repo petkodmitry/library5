@@ -20,8 +20,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class UserService implements Service<UsersEntity> {
-    private static Logger log = Logger.getLogger(UserService.class);
     private static UserService instance;
+    private static Logger log = Logger.getLogger(UserService.class);
     private static UserDao userDao = UserDao.getInstance();
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
