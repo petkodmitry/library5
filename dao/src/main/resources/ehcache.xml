@@ -11,7 +11,7 @@
                   diskExpiryThreadIntervalSeconds="600"
                   memoryStoreEvictionPolicy="LRU">
     </defaultCache>
-    <cache name="com.petko.entities2.UsersEntity"
+    <cache name="com.petko.entities.UsersEntity"
             maxElementsInMemory="2"
             eternal="true"
            overflowToDisk="true">

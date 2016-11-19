@@ -1,4 +1,4 @@
-package com.petko.entities;
+package com.petko.entitiesOLD;
 
 public class UserEntityOLD extends EntityOLD {
     private int userId;

@@ -1,6 +1,6 @@
 package com.petko.vo;
 
-import com.petko.entities2.PlaceOfIssue;
+import com.petko.entities.PlaceOfIssue;
 
 import java.util.Date;
 

@@ -1,7 +1,7 @@
 package com.petko.dao;
 
 import com.petko.DaoException;
-import com.petko.entities2.UsersEntity;
+import com.petko.entities.UsersEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;

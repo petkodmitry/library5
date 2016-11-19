@@ -33,6 +33,7 @@
     </form>
 </c:if>
 
+<BR><a href="controller?cmd=mySeminars">Мои семинары</a><BR>
 <BR><a href="controller?cmd=login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}

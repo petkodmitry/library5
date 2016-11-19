@@ -1,7 +1,8 @@
-package com.petko.entities2;
+package com.petko.entities;
 
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 //import javax.persistence.Entity;
@@ -50,7 +51,12 @@ public class SeminarsEntity extends Entity {
         this.seminarDate = startdate;
     }
 
-    @ManyToMany(/*targetEntity = UsersEntity.class, */mappedBy = "seminars")
+    @ManyToMany(/*targetEntity = UsersEntity.class, *//*mappedBy = "seminars"*/)
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinTable(name = "users_seminars"
+            , joinColumns = @JoinColumn(name = "sid2")
+            , inverseJoinColumns = @JoinColumn(name = "uid2")
+    )
     public Set<UsersEntity> getUsers() {
         return users;
     }

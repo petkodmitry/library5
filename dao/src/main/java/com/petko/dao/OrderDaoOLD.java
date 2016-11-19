@@ -1,9 +1,9 @@
 package com.petko.dao;
 
 import com.petko.DaoException;
-import com.petko.entities.OrderEntityOLD;
-import com.petko.entities2.OrderStatus;
-import com.petko.entities2.PlaceOfIssue;
+import com.petko.entitiesOLD.OrderEntityOLD;
+import com.petko.entities.OrderStatus;
+import com.petko.entities.PlaceOfIssue;
 import com.petko.managers.PoolManager;
 
 import java.sql.Connection;

@@ -1,8 +1,7 @@
 package com.petko.services;
 
-import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
-import com.petko.entities2.BooksEntity;
+import com.petko.entities.BooksEntity;
 import com.petko.managers.PoolManager;
 
 import javax.servlet.http.HttpServletRequest;

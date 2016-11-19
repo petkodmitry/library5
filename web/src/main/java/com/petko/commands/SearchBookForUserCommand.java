@@ -2,7 +2,7 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entities.BookEntityOLD;
+import com.petko.entitiesOLD.BookEntityOLD;
 import com.petko.services.BookService;
 
 import javax.servlet.http.HttpServletRequest;

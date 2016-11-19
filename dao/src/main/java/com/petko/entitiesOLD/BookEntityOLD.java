@@ -1,4 +1,4 @@
-package com.petko.entities;
+package com.petko.entitiesOLD;
 
 public class BookEntityOLD extends EntityOLD {
     private int bookId;

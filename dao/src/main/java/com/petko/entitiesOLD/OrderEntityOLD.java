@@ -1,7 +1,7 @@
-package com.petko.entities;
+package com.petko.entitiesOLD;
 
-import com.petko.entities2.OrderStatus;
-import com.petko.entities2.PlaceOfIssue;
+import com.petko.entities.OrderStatus;
+import com.petko.entities.PlaceOfIssue;
 
 import java.sql.Date;
 

@@ -1,6 +1,6 @@
 package com.petko.dao;
 
-import com.petko.entities.EntityOLD;
+import com.petko.entitiesOLD.EntityOLD;
 
 import java.util.List;
 

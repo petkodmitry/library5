@@ -1,4 +1,4 @@
-package com.petko.entities2;
+package com.petko.entities;
 
 public enum PlaceOfIssue {
     HOME,

@@ -1,4 +1,4 @@
-package com.petko.entities;
+package com.petko.entitiesOLD;
 
 public abstract class EntityOLD {
 }

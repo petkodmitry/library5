@@ -2,7 +2,7 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entities2.OrderStatus;
+import com.petko.entities.OrderStatus;
 import com.petko.services.OrderService;
 import com.petko.services.UserService;
 import com.petko.vo.AnyStatusOrdersList;

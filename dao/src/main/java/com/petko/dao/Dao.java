@@ -1,7 +1,7 @@
 package com.petko.dao;
 
 import com.petko.DaoException;
-import com.petko.entities2.Entity;
+import com.petko.entities.Entity;
 
 import java.util.List;
 

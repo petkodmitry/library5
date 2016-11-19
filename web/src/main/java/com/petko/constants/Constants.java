@@ -22,6 +22,8 @@ public class Constants {
     public final static String PAGE_ADD_BOOK = "page.addBook";
     public final static String PAGE_MY_SEMINARS = "page.mySeminars";
     public final static String PAGE_CHOOSE_SEMINARS = "page.chooseSeminars";
+    public final static String PAGE_ADMIN_SEMINARS = "page.adminSeminars";
+    public final static String PAGE_ADD_SEMINAR = "page.addSeminar";
 
     public final static String ERROR_MESSAGE_ATTRIBUTE = "errorMessage";
     public final static String FORWARD_PAGE_ATTRIBUTE = "forward";

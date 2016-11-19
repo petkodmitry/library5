@@ -1,7 +1,8 @@
-package com.petko.entities2;
+package com.petko.entities;
 
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import javax.persistence.Table;
@@ -94,7 +95,7 @@ public class UsersEntity extends Entity {
     }
 
     @ManyToMany/*(targetEntity = SeminarsEntity.class)*/
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinTable(name = "users_seminars"
             , joinColumns = @JoinColumn(name = "uid2")
             , inverseJoinColumns = @JoinColumn(name = "sid2")

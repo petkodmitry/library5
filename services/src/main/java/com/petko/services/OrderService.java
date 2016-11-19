@@ -1,12 +1,8 @@
 package com.petko.services;
 
-import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
-import com.petko.dao.BookDaoOLD;
-import com.petko.dao.OrderDaoOLD;
-import com.petko.dao.UserDaoOLD;
-import com.petko.entities2.*;
+import com.petko.entities.*;
 import com.petko.managers.PoolManager;
 import com.petko.vo.FullOrdersList;
 import com.petko.vo.OrderForMyOrdersList;

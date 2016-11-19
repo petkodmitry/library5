@@ -2,35 +2,38 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entitiesOLD.UserEntityOLD;
+import com.petko.entities.SeminarsEntity;
+import com.petko.services.SeminarService;
 import com.petko.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Set;
+import java.util.List;
 
-public class BlackListCommand extends AbstractCommand{
-    private static BlackListCommand instance;
+public class AdminSeminarsCommand extends AbstractCommand {
+    private static AdminSeminarsCommand instance;
 
-    private BlackListCommand() {}
+    private AdminSeminarsCommand() {}
 
-    public static synchronized BlackListCommand getInstance() {
+    public static synchronized AdminSeminarsCommand getInstance() {
         if (instance == null) {
-            instance = new BlackListCommand();
+            instance = new AdminSeminarsCommand();
         }
         return instance;
     }
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
-        UserService service = UserService.getInstance();
+        SeminarService service = SeminarService.getInstance();
+        UserService userService = UserService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
-        if (service.isAdminUser(request, login)) {
-            String page = ResourceManager.getInstance().getProperty(Constants.PAGE_BLACK_LIST);
-            Set<UserEntityOLD> blackList = service.getUsersByBlock(request, true);
-            session.setAttribute("blackList", blackList);
+        String page = ResourceManager.getInstance().getProperty(Constants.PAGE_ADMIN_SEMINARS);
+
+        if (userService.isAdminUser(request, login)) {
+            List<SeminarsEntity> allSeminars = service.getAll(request);
+            session.setAttribute("allSeminars", allSeminars);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды
         } else if ((request.getAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE)) == null) {

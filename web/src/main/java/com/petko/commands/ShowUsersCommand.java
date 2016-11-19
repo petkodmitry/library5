@@ -2,7 +2,7 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entities2.UsersEntity;
+import com.petko.entities.UsersEntity;
 import com.petko.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;

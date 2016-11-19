@@ -3,8 +3,8 @@ package com.petko.commands;
 public enum CommandType {
     LOGIN, REGISTER, SHOWUSERS, LOGOUT, UNKNOWN, SEARCHBOOK, ORDERTOREADINGROOM, ORDERTOHOME, MYORDERS,
     CANCELUSERORDER, MYBOOKS, WAITINGORDERS, PROLONGORDER, OPENEDORDERS, PROVIDEBOOK, CLOSEORDER, EXPIREDORDERS,
-    BLOCKUSER, BLACKLIST, UNBLOCKUSER, SEARCHBOOKADMIN, DELETEBOOK, ADDBOOK, MYSEMINARS, UNSUBSCRIBESEMINAR,
-    CHOOSESEMINARS;
+    BLOCKUSER, BLACKLIST, UNBLOCKUSER, SEARCHBOOKADMIN, DELETEBOOK, ADDBOOK, MYSEMINARS, CHOOSESEMINARS,
+    UNSUBSCRIBESEMINAR, SUBSCRIBETOSEMINAR, ADMINSEMINARS, ADDSEMINAR, DELETESEMINAR, USERSOFSEMINAR;
 
     public static CommandType getCommandType(String commandName) {
         try {
@@ -67,6 +67,16 @@ public enum CommandType {
                 return UnSubscribeSeminarCommand.getInstance();
             case CHOOSESEMINARS:
                 return ChooseSeminarsCommand.getInstance();
+            case SUBSCRIBETOSEMINAR:
+                return SubscribeToSeminarCommand.getInstance();
+            case ADMINSEMINARS:
+                return AdminSeminarsCommand.getInstance();
+            case ADDSEMINAR:
+                return AddSeminarCommand.getInstance();
+            case DELETESEMINAR:
+                return DeleteSeminarCommand.getInstance();
+            case USERSOFSEMINAR:
+                return UsersOfSeminarCommand.getInstance();
             default:
                 return UnknownCommand.getInstance();
         }

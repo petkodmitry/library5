@@ -30,9 +30,6 @@
         </tr>
         <tr style="height: 25px">
             <td>
-                <%--<form method="post" action="controller">
-                    <BUTTON tabindex="-1" type="submit" formaction="controller?cmd=searchBookAdmin" title="Назад">Назад</BUTTON>
-                </form>--%>
             </td>
             <td align="right"><INPUT type="submit" formaction="controller?cmd=addBook" title="Добавить новую книгу" value="Добавить"></td>
         </tr>

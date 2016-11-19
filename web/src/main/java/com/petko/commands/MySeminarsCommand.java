@@ -2,7 +2,7 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entities2.SeminarsEntity;
+import com.petko.entities.SeminarsEntity;
 import com.petko.services.SeminarService;
 
 import javax.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
 package com.petko.dao;
 
 import com.petko.DaoException;
-import com.petko.entities.UserEntityOLD;
+import com.petko.entitiesOLD.UserEntityOLD;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

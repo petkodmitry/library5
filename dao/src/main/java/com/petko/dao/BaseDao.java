@@ -1,7 +1,7 @@
 package com.petko.dao;
 
 import com.petko.DaoException;
-import com.petko.entities2.Entity;
+import com.petko.entities.Entity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -21,8 +21,6 @@ public class BaseDao<T extends Entity> implements Dao<T> {
             log.info("saveOrUpdate(): " + entity);
             session = util.getSession();
             session.saveOrUpdate(entity);
-//            log.info("saveOrUpdate(entity): " + entity);
-//            log.info("Save or update (commit): " + entity);
         } catch (HibernateException e) {
             String message = "Error save or update ENTITY in Dao.";
             log.error(message + e);

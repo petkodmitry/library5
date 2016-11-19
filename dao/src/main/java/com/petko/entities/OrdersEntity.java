@@ -1,4 +1,4 @@
-package com.petko.entities2;
+package com.petko.entities;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;

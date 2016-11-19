@@ -20,10 +20,10 @@
         <property name="hibernate.cache.use_second_level_cache">true</property>
         <property name="net.sf.ehcache.configurationResourceName">/ehcache.xml</property>
 
-        <mapping class="com.petko.entities2.BlacklistEntity"/>
-        <mapping class="com.petko.entities2.BooksEntity"/>
-        <mapping class="com.petko.entities2.OrdersEntity"/>
-        <mapping class="com.petko.entities2.SeminarsEntity"/>
-        <mapping class="com.petko.entities2.UsersEntity"/>
+        <mapping class="com.petko.entities.BlacklistEntity"/>
+        <mapping class="com.petko.entities.BooksEntity"/>
+        <mapping class="com.petko.entities.OrdersEntity"/>
+        <mapping class="com.petko.entities.SeminarsEntity"/>
+        <mapping class="com.petko.entities.UsersEntity"/>
     </session-factory>
 </hibernate-configuration>
