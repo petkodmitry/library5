@@ -28,7 +28,5 @@ public class ProlongOrderCommand extends AbstractCommand{
         service.prolongOrder(request, login, orderId);
 
         MyBooksCommand.getInstance().execute(request, response);
-        /*String page = ResourceManager.getInstance().getProperty(Constants.PAGE_MY_BOOKS);
-        setForwardPage(request, page);*/
     }
 }

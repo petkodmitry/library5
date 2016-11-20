@@ -18,7 +18,7 @@ public class BaseDao<T extends Entity> implements Dao<T> {
     protected static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
     protected static Session session;
 
-    @Override
+    /*@Override
     public void saveOrUpdate(T entity) throws DaoException {
         try {
             log.info("saveOrUpdate(): " + entity);
@@ -26,6 +26,32 @@ public class BaseDao<T extends Entity> implements Dao<T> {
             session.saveOrUpdate(entity);
         } catch (HibernateException e) {
             String message = "Error save or update " + entity + " in Dao.";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+    }*/
+
+    @Override
+    public void save(T entity) throws DaoException {
+        try {
+            log.info("save(): " + entity);
+            session = util.getSession();
+            session.save(entity);
+        } catch (HibernateException e) {
+            String message = "Error save " + entity + " in Dao.";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+    }
+
+    @Override
+    public void update(T entity) throws DaoException {
+        try {
+            log.info("update(): " + entity);
+            session = util.getSession();
+            session.update(entity);
+        } catch (HibernateException e) {
+            String message = "Error update " + entity + " in Dao.";
             log.error(message + e);
             throw new DaoException(message);
         }

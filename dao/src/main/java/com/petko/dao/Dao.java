@@ -7,10 +7,22 @@ import java.util.List;
 
 public interface Dao<T extends Entity> {
     /**
+     * adds or updates entity in database
+     * @param entity - entity
+     */
+//    void saveOrUpdate(T entity) throws DaoException;
+
+    /**
      * adds entity in database
      * @param entity - entity
      */
-    void saveOrUpdate(T entity) throws DaoException;
+    void save(T entity) throws DaoException;
+
+    /**
+     * updates entity in database
+     * @param entity - entity
+     */
+    void update(T entity) throws DaoException;
 
     /**
      * gives a list of all elements in the DB

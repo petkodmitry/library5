@@ -7,10 +7,6 @@
 <%@ page errorPage="error.jsp" %>
 <html>
 <head>
-    <%--<script src="js/jquery-3.1.1.js"></script>--%>
-    <%--<script src="js/orderToHome.js"></script>--%>
-    <%--<script src="js/orderToReadingRoom.js"></script>--%>
-
     <title>Поиск книг</title>
 </head>
 <body><H3>Поиск книги для заказа</H3>
@@ -44,16 +40,16 @@
                     <td>${book.getTitle()}</td>
                     <td>${book.getAuthor()}</td>
                     <td>
-                        <c:if test="${book.isBusy() == false}">Available</c:if>
-                        <c:if test="${book.isBusy() == true}">N/A</c:if>
+                        <c:if test="${book.getIsBusy() == false}">Available</c:if>
+                        <c:if test="${book.getIsBusy() == true}">N/A</c:if>
                     </td>
                     <td>
-                        <c:if test="${book.isBusy() == false}">
+                        <c:if test="${book.getIsBusy() == false}">
                             <a href="controller?cmd=orderToHome&bookId=${book.getBookId()}">Заказать</a>
                         </c:if>
                     </td>
                     <td>
-                        <c:if test="${book.isBusy() == false}">
+                        <c:if test="${book.getIsBusy() == false}">
                             <a href="controller?cmd=orderToReadingRoom&bookId=${book.getBookId()}">Заказать</a>
                         </c:if>
                     </td>

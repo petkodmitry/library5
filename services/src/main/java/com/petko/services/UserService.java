@@ -57,7 +57,6 @@ public class UserService implements Service<UsersEntity> {
     public void logOut(HttpServletRequest request, String login) {
         if (login != null) removeFromActiveUsers(login);
         request.getSession().invalidate();
-
     }
 
 //    public boolean isLoginSuccessOLD(HttpServletRequest request, String login, String password) {
@@ -110,15 +109,21 @@ public class UserService implements Service<UsersEntity> {
     }
 
     public boolean isAdminUser(HttpServletRequest request, String login) {
-        Connection connection = null;
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
-            return UserDaoOLD.getInstance().getUserStatus(connection, login) == 1;
-        } catch (DaoException | SQLException | ClassNotFoundException e) {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            UsersEntity user = userDao.getByLogin(login);
+            return user.getIsAdmin();
+//            return UserDaoOLD.getInstance().getUserStatus(connection, login) == 1;
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
             return false;
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+        }  finally {
+            util.releaseSession(currentSession);
         }
     }
 

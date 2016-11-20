@@ -46,7 +46,7 @@ public class BooksEntity extends Entity {
     }
 
     @Basic
-    @Type(type = "org.hibernate.type.NumericBooleanType")
+    @Type(type = "yes_no")
     @Column(name = "isbusy", nullable = true)
     public Boolean getIsBusy() {
         return isBusy;

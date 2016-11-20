@@ -1,8 +1,14 @@
 package com.petko.services;
 
+import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
+import com.petko.dao.BookDao;
 import com.petko.entities.BooksEntity;
 import com.petko.managers.PoolManager;
+import com.petko.utils.HibernateUtilLibrary;
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Connection;
@@ -11,6 +17,9 @@ import java.util.*;
 
 public class BookService implements Service<BooksEntity>{
     private static BookService instance;
+    private static Logger log = Logger.getLogger(BookService.class);
+    private static BookDao bookDao = BookDao.getInstance();
+    private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
     private BookService() {}
 
@@ -21,18 +30,41 @@ public class BookService implements Service<BooksEntity>{
         return instance;
     }
 
-    public Set<BooksEntity> searchBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook) {
-        Set<BooksEntity> result = new HashSet<>();
-        Connection connection = null;
+//    public Set<BooksEntity> searchBooksByTitleOrAuthorOLD(HttpServletRequest request, String searchTextInBook) {
+//        Set<BooksEntity> result = new HashSet<>();
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+////            result.addAll(BookDaoOLD.getInstance().getFreeBooksByTitleOrAuthor(connection, searchTextInBook));
+////            result.addAll(BookDaoOLD.getInstance().getBusyBooksByTitleOrAuthor(connection, searchTextInBook));
+//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//            return Collections.emptySet();
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//        return result;
+//    }
+
+    public List<BooksEntity> searchBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook) {
+        List<BooksEntity> result = new ArrayList<>();
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
 //            result.addAll(BookDaoOLD.getInstance().getFreeBooksByTitleOrAuthor(connection, searchTextInBook));
 //            result.addAll(BookDaoOLD.getInstance().getBusyBooksByTitleOrAuthor(connection, searchTextInBook));
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+            result = bookDao.getBooksByTitleOrAuthorAndStatus(searchTextInBook, null);
+            transaction.commit();
+            log.info("Search books by (login or title) and status (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
-            return Collections.emptySet();
+            return Collections.emptyList();
         } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+            util.releaseSession(currentSession);
         }
         return result;
     }

@@ -2,13 +2,13 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entitiesOLD.BookEntityOLD;
+import com.petko.entities.BooksEntity;
 import com.petko.services.BookService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Set;
+import java.util.List;
 
 public class SearchBookForUserCommand extends AbstractCommand{
     private static SearchBookForUserCommand instance;
@@ -28,13 +28,13 @@ public class SearchBookForUserCommand extends AbstractCommand{
         BookService service = BookService.getInstance();
         HttpSession session = request.getSession();
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
-        Set<BookEntityOLD> searchBookForUser = null;
+        List<BooksEntity> searchBookForUser;
         /**
          * if there is searchTextInBook parameter in request
          */
         String searchTextInBook;
         if ((searchTextInBook = request.getParameter("searchTextInBook")) != null && !"".equals(searchTextInBook)) {
-//            searchBookForUser = service.searchBooksByTitleOrAuthor(request, searchTextInBook);
+            searchBookForUser = service.searchBooksByTitleOrAuthor(request, searchTextInBook);
             session.setAttribute("searchBookForUser", searchBookForUser);
         }
         setForwardPage(request, page);

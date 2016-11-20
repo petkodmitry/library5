@@ -75,7 +75,7 @@ public class UsersEntity extends Entity {
     }
 
     @Basic
-    @Type(type = "org.hibernate.type.NumericBooleanType")
+    @Type(type = "yes_no")
     @Column(name = "isadmin", nullable = true)
     public Boolean getIsAdmin() {
         return isAdmin;
@@ -86,7 +86,8 @@ public class UsersEntity extends Entity {
     }
 
     @Basic
-    @Type(type = "org.hibernate.type.NumericBooleanType")
+//    @Type(type = "org.hibernate.type.NumericBooleanType")
+    @Type(type = "yes_no")
     @Column(name = "isblocked", nullable = true)
     public Boolean getIsBlocked() {
         return isBlocked;

@@ -21,7 +21,6 @@ public class CloseOrderCommand extends AbstractCommand{
         return instance;
     }
 
-
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) {
         OrderService service = OrderService.getInstance();

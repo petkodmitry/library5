@@ -99,6 +99,7 @@ public class OrdersEntity extends Entity {
 
     @Basic
     @Temporal(TemporalType.DATE)
+//    @Type(type = "timestamp")
     @Column(name = "startdate", nullable = false)
     public Date getStartDate() {
         return startDate;
@@ -110,6 +111,7 @@ public class OrdersEntity extends Entity {
 
     @Basic
     @Temporal(TemporalType.DATE)
+//    @Type(type = "timestamp")
     @Column(name = "enddate", nullable = false)
     public Date getEndDate() {
         return endDate;

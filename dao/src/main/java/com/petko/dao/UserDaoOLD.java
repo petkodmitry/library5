@@ -23,7 +23,7 @@ public class UserDaoOLD implements DaoOLD<UserEntityOLD> {
         return instance;
     }
 
-    public boolean isLoginSuccess(Connection connection, String login, String password) throws DaoException{
+    /*public boolean isLoginSuccess(Connection connection, String login, String password) throws DaoException{
         try {
             PreparedStatement statement = null;
             ResultSet result = null;
@@ -40,9 +40,9 @@ public class UserDaoOLD implements DaoOLD<UserEntityOLD> {
         } catch (SQLException e) {
             throw new DaoException("Ошибка выполнения запроса логина/пароля к базе");
         }
-    }
+    }*/
 
-    public int getUserStatus(Connection connection, String login) throws DaoException{
+    /*public int getUserStatus(Connection connection, String login) throws DaoException{
         try {
             PreparedStatement statement = null;
             ResultSet result = null;
@@ -61,7 +61,7 @@ public class UserDaoOLD implements DaoOLD<UserEntityOLD> {
         } catch (SQLException e) {
             throw new DaoException("Ошибка выполнения запроса к базе об уровне пользователя");
         }
-    }
+    }*/
 
     @Override
     public void add(UserEntityOLD entity) {

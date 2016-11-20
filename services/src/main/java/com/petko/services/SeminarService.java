@@ -169,7 +169,8 @@ public class SeminarService implements Service<SeminarsEntity>{
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
 
-            seminarDao.saveOrUpdate(entity);
+//            seminarDao.saveOrUpdate(entity);
+            seminarDao.save(entity);
 
             transaction.commit();
             log.info("Add seminar to DB (commit)");

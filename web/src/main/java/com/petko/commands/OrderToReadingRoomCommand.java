@@ -29,7 +29,6 @@ public class OrderToReadingRoomCommand extends AbstractCommand{
         int bookId = Integer.parseInt(request.getParameter("bookId"));
         service.orderToHomeOrToRoom(request, login, bookId, false);
 
-//        MyOrdersCommand.getInstance().execute(request, response);
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SEARCH_BOOK_FOR_USER);
         setForwardPage(request, page);
     }
