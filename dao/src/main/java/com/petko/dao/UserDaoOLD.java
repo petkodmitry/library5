@@ -68,28 +68,28 @@ public class UserDaoOLD implements DaoOLD<UserEntityOLD> {
 
     }
 
-    public void add(Connection connection, UserEntityOLD entity) throws DaoException{
-        try {
-//            UserEntityOLD answer = new UserEntityOLD();
-            PreparedStatement statement = null;
-//            ResultSet result = null;
-            try {
-                statement = connection.prepareStatement("INSERT INTO USERS (fname, lname, login, psw, isadmin, isblocked) VALUES (?, ?, ?, ?, ?, ?)");
-                statement.setString(1, entity.getFirstName());
-                statement.setString(2, entity.getLastName());
-                statement.setString(3, entity.getLogin());
-                statement.setString(4, entity.getPassword());
-                statement.setBoolean(5, entity.isAdmin());
-                statement.setBoolean(6, entity.isBlocked());
-                statement.executeUpdate();
-            } finally {
-//                if (result != null) result.close();
-                if (statement != null) statement.close();
-            }
-        } catch (SQLException e) {
-            throw new DaoException("Ошибка выполнения запроса на добавление пользователя");
-        }
-    }
+//    public void add(Connection connection, UserEntityOLD entity) throws DaoException{
+//        try {
+////            UserEntityOLD answer = new UserEntityOLD();
+//            PreparedStatement statement = null;
+////            ResultSet result = null;
+//            try {
+//                statement = connection.prepareStatement("INSERT INTO USERS (fname, lname, login, psw, isadmin, isblocked) VALUES (?, ?, ?, ?, ?, ?)");
+//                statement.setString(1, entity.getFirstName());
+//                statement.setString(2, entity.getLastName());
+//                statement.setString(3, entity.getLogin());
+//                statement.setString(4, entity.getPassword());
+//                statement.setBoolean(5, entity.isAdmin());
+//                statement.setBoolean(6, entity.isBlocked());
+//                statement.executeUpdate();
+//            } finally {
+////                if (result != null) result.close();
+//                if (statement != null) statement.close();
+//            }
+//        } catch (SQLException e) {
+//            throw new DaoException("Ошибка выполнения запроса на добавление пользователя");
+//        }
+//    }
 
     public List<UserEntityOLD> getAll() {
         return null;

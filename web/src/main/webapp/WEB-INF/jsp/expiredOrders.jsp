@@ -39,7 +39,9 @@
                 <td>${order.getDelayDays()}</td>
                 <td>${order.isBlocked() ? "да" : "НЕТ"}</td>
                 <td>
-                    <a href="controller?cmd=blockUser&login=${order.getLogin()}">Заблокировать</a>
+                    <c:if test="${!order.isBlocked()}">
+                        <a href="controller?cmd=blockUser&login=${order.getLogin()}">Заблокировать</a>
+                    </c:if>
                 </td>
             </tr>
         </c:forEach>

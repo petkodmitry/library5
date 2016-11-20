@@ -54,8 +54,6 @@ public class BookService implements Service<BooksEntity>{
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
 
-//            result.addAll(BookDaoOLD.getInstance().getFreeBooksByTitleOrAuthor(connection, searchTextInBook));
-//            result.addAll(BookDaoOLD.getInstance().getBusyBooksByTitleOrAuthor(connection, searchTextInBook));
             result = bookDao.getBooksByTitleOrAuthorAndStatus(searchTextInBook, null);
             transaction.commit();
             log.info("Search books by (login or title) and status (commit)");
@@ -69,72 +67,146 @@ public class BookService implements Service<BooksEntity>{
         return result;
     }
 
-    public List<BooksEntity> getAllBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook) {
-        List<BooksEntity> result = new ArrayList<>();
-        Connection connection = null;
-        try {
-            connection = PoolManager.getInstance().getConnection();
-//            result = BookDaoOLD.getInstance().getBooksByTitleOrAuthor(connection, searchTextInBook);
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
-            ExceptionsHandler.processException(request, e);
-            return Collections.emptyList();
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
-        }
-        return result;
-    }
+    /**/
+//    public List<BooksEntity> getAllBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook) {
+//        List<BooksEntity> result = new ArrayList<>();
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+////            result = BookDaoOLD.getInstance().getBooksByTitleOrAuthor(connection, searchTextInBook);
+//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//            return Collections.emptyList();
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//        return result;
+//    }
 
-    public void setBookBusy(HttpServletRequest request, Integer bookId, Boolean isBusy) {
-        Connection connection = null;
-        try {
-            connection = PoolManager.getInstance().getConnection();
-            BooksEntity entity = null;
-//            entity = BookDaoOLD.getInstance().getById(connection, bookId);
-            entity.setIsBusy(isBusy);
-//            BookDaoOLD.getInstance().update(connection, entity);
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
-            ExceptionsHandler.processException(request, e);
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
-        }
-    }
+    /**/
+//    public void setBookBusyOLD(HttpServletRequest request, Integer bookId, Boolean isBusy) {
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//            BooksEntity entity = null;
+////            entity = BookDaoOLD.getInstance().getById(connection, bookId);
+//            entity.setIsBusy(isBusy);
+////            BookDaoOLD.getInstance().update(connection, entity);
+//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//    }
 
-    public boolean isBusy(HttpServletRequest request, Integer bookId) {
-        Connection connection = null;
-        try {
-            connection = PoolManager.getInstance().getConnection();
-            BooksEntity entity = null;
-//            entity = BookDaoOLD.getInstance().getById(connection, bookId);
-            return entity.getIsBusy();
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
-            ExceptionsHandler.processException(request, e);
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
-        }
-        return true;
-    }
+    /**/
+//    public void setBookBusy(HttpServletRequest request, /*Integer bookId*/ BooksEntity entity, Boolean isBusy) {
+////        Session currentSession = null;
+////        Transaction transaction = null;
+//        try {
+////            currentSession = util.getSession();
+////            transaction = currentSession.beginTransaction();
+//
+////            BooksEntity entity = bookDao.getById(bookId);
+//            entity.setIsBusy(isBusy);
+//            bookDao.update(entity);
+//
+////            transaction.commit();
+////            log.info("Update book (commit)");
+//        } catch (DaoException e) {
+////            transaction.rollback();
+//            ExceptionsHandler.processException(request, e);
+//        } /*finally {
+//            util.releaseSession(currentSession);
+//        }*/
+//    }
+
+    /**/
+//    public boolean isBusy(HttpServletRequest request, Integer bookId) {
+//        boolean result = true;
+//        Session currentSession = null;
+//        Transaction transaction = null;
+//        try {
+//            currentSession = util.getSession();
+//            transaction = currentSession.beginTransaction();
+//
+//            BooksEntity entity = bookDao.getById(bookId);
+////            entity = BookDaoOLD.getInstance().getById(connection, bookId);
+//            result = entity.getIsBusy();
+//
+//            transaction.commit();
+//            log.info("Get book by ID (commit)");
+//        } catch (DaoException e) {
+//            transaction.rollback();
+//            ExceptionsHandler.processException(request, e);
+//        } finally {
+//            util.releaseSession(currentSession);
+//        }
+//        return result;
+//    }
+
+    /**/
+//    public void deleteBookOLD(HttpServletRequest request, Integer bookId) {
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//    //            BookDaoOLD.getInstance().delete(connection, bookId);
+//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//    }
 
     public void deleteBook(HttpServletRequest request, Integer bookId) {
-        Connection connection = null;
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
-//            BookDaoOLD.getInstance().delete(connection, bookId);
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            BooksEntity book = bookDao.getById(bookId);
+            if (book != null) {
+                bookDao.delete(book);
+                transaction.commit();
+                log.info("Delete book (commit)");
+            }
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
         } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+            util.releaseSession(currentSession);
         }
     }
 
+    /**/
+//    public void addOLD(HttpServletRequest request, BooksEntity bookEntity) {
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+////            BookDaoOLD.getInstance().add(connection, bookEntity);
+//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//    }
+
     public void add(HttpServletRequest request, BooksEntity bookEntity) {
-        Connection connection = null;
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
-//            BookDaoOLD.getInstance().add(connection, bookEntity);
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            bookDao.save(bookEntity);
+            transaction.commit();
+            log.info("Save book (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
         } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+            util.releaseSession(currentSession);
         }
     }
 

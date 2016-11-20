@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -51,6 +52,27 @@ public class OrderDao extends BaseDao<OrdersEntity> {
             log.info("getOrdersByLoginAndStatus in OrderDao");
         } catch (HibernateException e) {
             String message = "Error getOrdersByLoginAndStatus in OrderDao";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+        return result;
+    }
+
+    public List<OrdersEntity> getOrdersByStatusAndEndDate(OrderStatus orderStatus, Date endDate) throws DaoException {
+        List<OrdersEntity> result;
+        try {
+            session = util.getSession();
+
+            String hql = "SELECT O FROM OrdersEntity O WHERE O.status=:statusParam AND O.endDate<:endDateParam";
+            Query query = session.createQuery(hql);
+            query.setParameter("statusParam", orderStatus.toString());
+            query.setParameter("endDateParam", endDate);
+
+            result = query.list();
+
+            log.info("getOrdersByStatusAndEndDate in OrderDao");
+        } catch (HibernateException e) {
+            String message = "Error getOrdersByStatusAndEndDate in OrderDao";
             log.error(message + e);
             throw new DaoException(message);
         }

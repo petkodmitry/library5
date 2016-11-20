@@ -205,28 +205,28 @@ public class OrderDaoOLD implements DaoOLD<OrderEntityOLD> {
         }
     }
 
-    /*public void update(Connection connection, OrderEntityOLD entity) throws DaoException {
-//        Connection connection = poolManager.getConnection();
-        try {
-            PreparedStatement statement = null;
-//            ResultSet result = null;
-            try {
-                statement = connection.prepareStatement("UPDATE ORDERS SET (login, bid, status, placeofissue, startdate, enddate) VALUES (?, ?, ?, ?, ?, ?)");
-                statement.setString(1, entity.getSubject());
-                statement.setInt(2, entity.getBookId());
-                statement.setString(3, entity.getStatus().toString());
-                statement.setString(4, entity.getPlaceOfIssue().toString());
-                statement.setDate(5, entity.getStartDate());
-                statement.setDate(6, entity.getEndDate());
-                statement.executeUpdate();
-            } finally {
-//                if (result != null) result.close();
-                if (statement != null) statement.close();
-            }
-        } catch (SQLException e) {
-            throw new DaoException("Ошибка выполнения запроса на добавление заказа");
-        }
-    }*/
+//    public void update(Connection connection, OrderEntityOLD entity) throws DaoException {
+////        Connection connection = poolManager.getConnection();
+//        try {
+//            PreparedStatement statement = null;
+////            ResultSet result = null;
+//            try {
+//                statement = connection.prepareStatement("UPDATE ORDERS SET (login, bid, status, placeofissue, startdate, enddate) VALUES (?, ?, ?, ?, ?, ?)");
+//                statement.setString(1, entity.getSubject());
+//                statement.setInt(2, entity.getBookId());
+//                statement.setString(3, entity.getStatus().toString());
+//                statement.setString(4, entity.getPlaceOfIssue().toString());
+//                statement.setDate(5, entity.getStartDate());
+//                statement.setDate(6, entity.getEndDate());
+//                statement.executeUpdate();
+//            } finally {
+////                if (result != null) result.close();
+//                if (statement != null) statement.close();
+//            }
+//        } catch (SQLException e) {
+//            throw new DaoException("Ошибка выполнения запроса на добавление заказа");
+//        }
+//    }
 
     public void add(OrderEntityOLD entity) {
 

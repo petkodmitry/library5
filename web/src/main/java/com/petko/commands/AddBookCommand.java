@@ -2,7 +2,7 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entitiesOLD.BookEntityOLD;
+import com.petko.entities.BooksEntity;
 import com.petko.services.BookService;
 import com.petko.services.UserService;
 
@@ -28,10 +28,10 @@ public class AddBookCommand extends AbstractCommand {
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         if (UserService.getInstance().isAdminUser(request, login)) {
-            BookEntityOLD regData = (BookEntityOLD) session.getAttribute("regData");
+            BooksEntity regData = (BooksEntity) session.getAttribute("regData");
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_ADD_BOOK);
             if (regData == null) {
-                regData = new BookEntityOLD();
+                regData = new BooksEntity();
                 session.setAttribute("regData", regData);
             } else {
                 String title = request.getParameter("newTitle");
@@ -39,10 +39,9 @@ public class AddBookCommand extends AbstractCommand {
                 if (!"".equals(title) && !"".equals(author)) {
                     regData.setTitle(title);
                     regData.setAuthor(author);
-//                    service.add(request, regData);
-                    if (regData.getBookId() != 0) {
-                        request.setAttribute("info", "Книга добавлена в базу библиотеки");
-                    }
+                    regData.setIsBusy(false);
+                    service.add(request, regData);
+                    request.setAttribute("info", "Книга добавлена в базу библиотеки");
                     session.removeAttribute("regData");
                     page = ResourceManager.getInstance().getProperty(Constants.PAGE_SEARCH_BOOK_ADMIN);
                 } else {
@@ -50,9 +49,7 @@ public class AddBookCommand extends AbstractCommand {
                 }
             }
 
-//            session.removeAttribute("searchBookAdmin");
             setForwardPage(request, page);
-//            SearchBookAdminCommand.getInstance().execute(request, response);
         // если не админ, сообщаем о невозможности выполнения команды
         } else if ((request.getAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE)) == null) {
             setErrorMessage(request, "У Вас нет прав для выполнения данной команды");

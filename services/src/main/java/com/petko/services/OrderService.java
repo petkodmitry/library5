@@ -5,8 +5,8 @@ import com.petko.ExceptionsHandler;
 import com.petko.constants.Constants;
 import com.petko.dao.BookDao;
 import com.petko.dao.OrderDao;
+import com.petko.dao.UserDao;
 import com.petko.entities.*;
-import com.petko.managers.PoolManager;
 import com.petko.utils.HibernateUtilLibrary;
 import com.petko.vo.FullOrdersList;
 import com.petko.vo.OrderForMyOrdersList;
@@ -16,15 +16,16 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.*;
 import java.util.*;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 public class OrderService implements Service<OrdersEntity>{
     private static OrderService instance;
     private static Logger log = Logger.getLogger(OrderService.class);
     private static OrderDao orderDao = OrderDao.getInstance();
     private static BookDao bookDao = BookDao.getInstance();
+    private static UserDao userDao = UserDao.getInstance();
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
     private OrderService() {}
@@ -36,34 +37,34 @@ public class OrderService implements Service<OrdersEntity>{
         return instance;
     }
 
-    /*public List<OrderForMyOrdersList> getOrdersByLoginAndStatusOLD(HttpServletRequest request, String login, OrderStatus orderStatus) {
-        List<OrderForMyOrdersList> result = new ArrayList<>();
-        Connection connection = null;
-        try {
-            connection = PoolManager.getInstance().getConnection();
-            Set<OrdersEntity> orderEntityList = null;
-            Set<OrdersEntity> listByStatus = null;
-//            Set<OrdersEntity> orderEntityList = OrderDaoOLD.getInstance().getAllByUser(connection, login);
-//            Set<OrdersEntity> listByStatus = OrderDaoOLD.getInstance().getAllByStatus(connection, orderStatus.toString());
-            orderEntityList.retainAll(listByStatus);
-
-            for (OrdersEntity entity: orderEntityList) {
-                OrderForMyOrdersList orderView = new OrderForMyOrdersList(entity.getOrderId(), entity.getBookId(),
-                        entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
-                BooksEntity bookEntity = null;
-//                BooksEntity bookEntity = BookDaoOLD.getInstance().getById(connection, entity.getBookId());
-                orderView.setTitle(bookEntity.getTitle());
-                orderView.setAuthor(bookEntity.getAuthor());
-                result.add(orderView);
-            }
-        } catch (*//*DaoException |*//* SQLException | ClassNotFoundException e) {
-            ExceptionsHandler.processException(request, e);
-            return Collections.emptyList();
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
-        }
-        return result;
-    }*/
+//    public List<OrderForMyOrdersList> getOrdersByLoginAndStatusOLD(HttpServletRequest request, String login, OrderStatus orderStatus) {
+//        List<OrderForMyOrdersList> result = new ArrayList<>();
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//            Set<OrdersEntity> orderEntityList = null;
+//            Set<OrdersEntity> listByStatus = null;
+////            Set<OrdersEntity> orderEntityList = OrderDaoOLD.getInstance().getAllByUser(connection, login);
+////            Set<OrdersEntity> listByStatus = OrderDaoOLD.getInstance().getAllByStatus(connection, orderStatus.toString());
+//            orderEntityList.retainAll(listByStatus);
+//
+//            for (OrdersEntity entity: orderEntityList) {
+//                OrderForMyOrdersList orderView = new OrderForMyOrdersList(entity.getOrderId(), entity.getBookId(),
+//                        entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
+//                BooksEntity bookEntity = null;
+////                BooksEntity bookEntity = BookDaoOLD.getInstance().getById(connection, entity.getBookId());
+//                orderView.setTitle(bookEntity.getTitle());
+//                orderView.setAuthor(bookEntity.getAuthor());
+//                result.add(orderView);
+//            }
+//        } catch (DaoException | SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//            return Collections.emptyList();
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//        return result;
+//    }
 
     /**
      * getting orders list by login and order status
@@ -128,31 +129,31 @@ public class OrderService implements Service<OrdersEntity>{
         return result;
     }
 
-    /*public List<AnyStatusOrdersList> getOrdersByStatusOLD(HttpServletRequest request, OrderStatus orderStatus) {
-        List<AnyStatusOrdersList> result = new ArrayList<>();
-        Connection connection = null;
-        try {
-            connection = PoolManager.getInstance().getConnection();
-            Set<OrdersEntity> listByStatus = null;
-//            Set<OrdersEntity> listByStatus = OrderDaoOLD.getInstance().getAllByStatus(connection, orderStatus.toString());
-
-            for (OrdersEntity entity: listByStatus) {
-                AnyStatusOrdersList orderView = new AnyStatusOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
-                        entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
-                BooksEntity bookEntity = null;
-//                BooksEntity bookEntity = BookDaoOLD.getInstance().getById(connection, entity.getBookId());
-                orderView.setTitle(bookEntity.getTitle());
-                orderView.setAuthor(bookEntity.getAuthor());
-                result.add(orderView);
-            }
-        } catch (*//*DaoException |*//* SQLException | ClassNotFoundException e) {
-            ExceptionsHandler.processException(request, e);
-            return Collections.emptyList();
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
-        }
-        return result;
-    }*/
+//    public List<AnyStatusOrdersList> getOrdersByStatusOLD(HttpServletRequest request, OrderStatus orderStatus) {
+//        List<AnyStatusOrdersList> result = new ArrayList<>();
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//            Set<OrdersEntity> listByStatus = null;
+////            Set<OrdersEntity> listByStatus = OrderDaoOLD.getInstance().getAllByStatus(connection, orderStatus.toString());
+//
+//            for (OrdersEntity entity: listByStatus) {
+//                AnyStatusOrdersList orderView = new AnyStatusOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
+//                        entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
+//                BooksEntity bookEntity = null;
+////                BooksEntity bookEntity = BookDaoOLD.getInstance().getById(connection, entity.getBookId());
+//                orderView.setTitle(bookEntity.getTitle());
+//                orderView.setAuthor(bookEntity.getAuthor());
+//                result.add(orderView);
+//            }
+//        } catch (DaoException | SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//            return Collections.emptyList();
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//        return result;
+//    }
 
     //TODO объединить с getOrdersByLoginAndStatus()
     public List<AnyStatusOrdersList> getOrdersByStatus(HttpServletRequest request, OrderStatus orderStatus) {
@@ -164,16 +165,7 @@ public class OrderService implements Service<OrdersEntity>{
             transaction = currentSession.beginTransaction();
 
             List<OrdersEntity> listByStatus = orderDao.getOrdersByLoginAndStatus(null, orderStatus);
-
-//            for (OrdersEntity entity: listByStatus) {
-//                AnyStatusOrdersList orderView = new AnyStatusOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
-//                        entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
-//                BooksEntity bookEntity = null;
-////                BooksEntity bookEntity = BookDaoOLD.getInstance().getById(connection, entity.getBookId());
-//                orderView.setTitle(bookEntity.getTitle());
-//                orderView.setAuthor(bookEntity.getAuthor());
-//                result.add(orderView);
-//            }
+            List<OrdersEntity> listByDate = orderDao.getOrdersByLoginAndStatus(null, orderStatus);
 
             if (!listByStatus.isEmpty()) {
                 /**
@@ -219,63 +211,170 @@ public class OrderService implements Service<OrdersEntity>{
         return result;
     }
 
+    /**/
+//    public List<FullOrdersList> getExpiredOrdersOLD(HttpServletRequest request) {
+//        List<FullOrdersList> result = new ArrayList<>();
+//        OrderStatus orderStatus = OrderStatus.ON_HAND;
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//            Set<OrdersEntity> listByStatus = null;
+////            Set<OrdersEntity> listByStatus = OrderDaoOLD.getInstance().getAllByStatus(connection, orderStatus.toString());
+//            Date currentDate = new Date(Calendar.getInstance().getTime().getTime());
+//
+//            for (OrdersEntity entity: listByStatus) {
+//                long oneDay = 24L * 60L * 60L * 1_000L;
+//                int delayDays = (int) ((currentDate.getTime() - entity.getEndDate().getTime())/oneDay);
+//                if (delayDays > 0) {
+//                    FullOrdersList orderView = new FullOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
+//                            entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
+//                    BooksEntity bookEntity = null;
+//                    UsersEntity userEntity = null;
+////                    BooksEntity bookEntity = BookDaoOLD.getInstance().getById(connection, entity.getBookId());
+////                    UsersEntity userEntity = UserDaoOLD.getInstance().getByLogin(connection, entity.getLogin());
+//                    orderView.setBlocked(userEntity.getIsBlocked());
+//                    orderView.setTitle(bookEntity.getTitle());
+//                    orderView.setAuthor(bookEntity.getAuthor());
+//                    orderView.setDelayDays(delayDays);
+//                    result.add(orderView);
+//                }
+//            }
+//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//            return Collections.emptyList();
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//        return result;
+//    }
+
+    //TODO объединить с getOrdersByLoginAndStatus()
     public List<FullOrdersList> getExpiredOrders(HttpServletRequest request) {
         List<FullOrdersList> result = new ArrayList<>();
         OrderStatus orderStatus = OrderStatus.ON_HAND;
-        Connection connection = null;
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
-            Set<OrdersEntity> listByStatus = null;
-//            Set<OrdersEntity> listByStatus = OrderDaoOLD.getInstance().getAllByStatus(connection, orderStatus.toString());
-            Date currentDate = new Date(Calendar.getInstance().getTime().getTime());
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
 
-            for (OrdersEntity entity: listByStatus) {
+            Date today = new Date();
+            Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
+
+            List<OrdersEntity> listByStatus = orderDao.getOrdersByStatusAndEndDate(orderStatus, currentDate);
+
+            if (!listByStatus.isEmpty()) {
+                /**
+                 * getting IDs of all books in received List
+                 */
+                Set<Integer> bookIds = listByStatus.stream().map(OrdersEntity::getBookId).collect(Collectors.toSet());
+                /*for (OrdersEntity entity : listByStatus) {
+                    bookIds.add(entity.getBookId());
+                }*/
+
+                /**
+                 * getting all Logins from received List
+                 */
+                Set<String> allLogins = listByStatus.stream().map(OrdersEntity::getLogin).collect(Collectors.toSet());
+
+                /**
+                 * receiving a List of the Books by Set of IDs.
+                 * creating a Map of IDs-Books, for easier way to get Book's properties by ID without DataBase queries
+                 */
+                List<BooksEntity> booksEntities = bookDao.getAllByCoupleIds(bookIds);
+                Map<Integer, BooksEntity> booksMap = new HashMap<>();
+                for (BooksEntity book : booksEntities) {
+                    booksMap.put(book.getBookId(), book);
+                }
+
+                /**
+                 * receiving a List of the Users by Set of Logins.
+                 * creating a Map of logins-Users, for easier way to get User's properties by Login without DataBase queries
+                 */
+                List<UsersEntity> usersEntities = userDao.getAllByCoupleLogins(allLogins);
+                Map<String, UsersEntity> usersMap = new HashMap<>();
+                for (UsersEntity user : usersEntities) {
+                    usersMap.put(user.getLogin(), user);
+                }
+
+                /**
+                 * building an OrderForMyOrdersList entity and passing it to the result List
+                 */
                 long oneDay = 24L * 60L * 60L * 1_000L;
-                int delayDays = (int) ((currentDate.getTime() - entity.getEndDate().getTime())/oneDay);
-                if (delayDays > 0) {
+                for (OrdersEntity entity : listByStatus) {
+                    int delayDays = (int) ((currentDate.getTime() - entity.getEndDate().getTime())/oneDay);
+                    int bookId = entity.getBookId();
+                    BooksEntity book = booksMap.get(bookId);
+                    String login = entity.getLogin();
+                    UsersEntity user = usersMap.get(login);
                     FullOrdersList orderView = new FullOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
                             entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
-                    BooksEntity bookEntity = null;
-                    UsersEntity userEntity = null;
-//                    BooksEntity bookEntity = BookDaoOLD.getInstance().getById(connection, entity.getBookId());
-//                    UsersEntity userEntity = UserDaoOLD.getInstance().getByLogin(connection, entity.getLogin());
-                    orderView.setBlocked(userEntity.getIsBlocked());
-                    orderView.setTitle(bookEntity.getTitle());
-                    orderView.setAuthor(bookEntity.getAuthor());
+                    orderView.setTitle(book.getTitle());
+                    orderView.setAuthor(book.getAuthor());
+                    orderView.setBlocked(user.getIsBlocked());
                     orderView.setDelayDays(delayDays);
                     result.add(orderView);
                 }
+                log.info("Get all books by couple ids (commit)");
+                log.info("Get all users by couple logins (commit)");
             }
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+
+//            Set<OrdersEntity> listByStatus = null;
+////            Set<OrdersEntity> listByStatus = OrderDaoOLD.getInstance().getAllByStatus(connection, orderStatus.toString());
+//            Date currentDate = new Date(Calendar.getInstance().getTime().getTime());
+//
+//            for (OrdersEntity entity: listByStatus) {
+//                long oneDay = 24L * 60L * 60L * 1_000L;
+//                int delayDays = (int) ((currentDate.getTime() - entity.getEndDate().getTime())/oneDay);
+//                if (delayDays > 0) {
+//                    FullOrdersList orderView = new FullOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
+//                            entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
+//                    BooksEntity bookEntity = null;
+//                    UsersEntity userEntity = null;
+////                    BooksEntity bookEntity = BookDaoOLD.getInstance().getById(connection, entity.getBookId());
+////                    UsersEntity userEntity = UserDaoOLD.getInstance().getByLogin(connection, entity.getLogin());
+//                    orderView.setBlocked(userEntity.getIsBlocked());
+//                    orderView.setTitle(bookEntity.getTitle());
+//                    orderView.setAuthor(bookEntity.getAuthor());
+//                    orderView.setDelayDays(delayDays);
+//                    result.add(orderView);
+//                }
+//            }
+
+            transaction.commit();
+            log.info("Get orders by status and endDate (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+            util.releaseSession(currentSession);
         }
         return result;
     }
 
-    /*public void closeOrderOLD(HttpServletRequest request, String login, int orderID) {
-        Connection connection = null;
-        try {
-            connection = PoolManager.getInstance().getConnection();
-            OrdersEntity entity = null;
-//            OrdersEntity entity = OrderDaoOLD.getInstance().getById(connection, orderID);
-            if ((login == null) ||
-                    (entity.getLogin().equals(login) && entity.getStatus().equals(OrderStatus.ORDERED))) {
-//                OrderDaoOLD.getInstance().changeStatusOfOrder(connection, orderID, OrderStatus.CLOSED);
-//                OrderDaoOLD.getInstance().changeEndDateOfOrder(connection, orderID, new Date(Calendar.getInstance().getTime().getTime()));
-            }
-            // if User brought book to the Library, we mark Book as free
-            if (login == null && entity.getStatus().equals(OrderStatus.ON_HAND)) {
-                BookService.getInstance().setBookBusy(request, entity.getBookId(), false);
-            }
-        } catch (*//*DaoException |*//* SQLException | ClassNotFoundException e) {
-            ExceptionsHandler.processException(request, e);
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
-        }
-    }*/
+    /**/
+//    public void closeOrderOLD(HttpServletRequest request, String login, int orderID) {
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//            OrdersEntity entity = null;
+////            OrdersEntity entity = OrderDaoOLD.getInstance().getById(connection, orderID);
+//            if ((login == null) ||
+//                    (entity.getLogin().equals(login) && entity.getStatus().equals(OrderStatus.ORDERED))) {
+////                OrderDaoOLD.getInstance().changeStatusOfOrder(connection, orderID, OrderStatus.CLOSED);
+////                OrderDaoOLD.getInstance().changeEndDateOfOrder(connection, orderID, new Date(Calendar.getInstance().getTime().getTime()));
+//            }
+//            // if User brought book to the Library, we mark Book as free
+//            if (login == null && entity.getStatus().equals(OrderStatus.ON_HAND)) {
+//                BookService.getInstance().setBookBusy(request, entity.getBookId(), false);
+//            }
+//        } catch (DaoException | SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//    }
 
     public void closeOrder(HttpServletRequest request, String login, int orderID) {
         Session currentSession = null;
@@ -292,7 +391,6 @@ public class OrderService implements Service<OrdersEntity>{
             if (login == null && OrderStatus.ON_HAND.toString().equals(entity.getStatus())) {
                 BooksEntity book = bookDao.getById(entity.getBookId());
                 book.setIsBusy(false);
-//                bookDao.saveOrUpdate(book);
                 bookDao.update(book);
                 log.info("Get book by id (commit)");
                 log.info("update book (commit)");
@@ -318,6 +416,7 @@ public class OrderService implements Service<OrdersEntity>{
         }
     }
 
+    /**/
 //    public void orderToHomeOrToRoomOLD(HttpServletRequest request, String login, int bookID, boolean isToHome) {
 //        Connection connection = null;
 //        try {
@@ -384,7 +483,6 @@ public class OrderService implements Service<OrdersEntity>{
                 Date endDate = new Date(startDate.getTime() + delay);
                 newEntity = createNewEntity(login, bookID, OrderStatus.ORDERED.toString(), place.toString(),
                         startDate, endDate);
-//                orderDao.saveOrUpdate(newEntity);
                 currentSession.save(newEntity);
                 log.info("save order (commit)");
             } else {
@@ -401,6 +499,7 @@ public class OrderService implements Service<OrdersEntity>{
         }
     }
 
+    /**/
 //    public void prolongOrderOLD(HttpServletRequest request, String login, int orderID) {
 //        Connection connection = null;
 //        try {
@@ -449,7 +548,6 @@ public class OrderService implements Service<OrdersEntity>{
 
                 Date today = new Date();
                 Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
-//                Date currentDate = new Date(Calendar.getInstance().getTime().getTime());
 
                 long difference = endDate.getTime() - currentDate.getTime();
                 if (difference >= 0 && (difference - delay) <= interval) {
@@ -473,33 +571,80 @@ public class OrderService implements Service<OrdersEntity>{
         }
     }
 
+//    public void provideBookOLD(HttpServletRequest request, int orderID) {
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//            OrdersEntity entity = null;
+////            OrdersEntity entity = OrderDaoOLD.getInstance().getById(connection, orderID);
+//            if (BookService.getInstance().isBusy(request, entity.getBookId())) {
+//                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Эта книга уже выдана!");
+//                return;
+//            }
+//            if (entity.getStatus().equals(OrderStatus.ORDERED)) {
+//                long delay = 0L;
+//                if (PlaceOfIssue.HOME.equals(entity.getPlaceOfIssue())) {
+//                    delay = 30L * 24L * 60L * 60L * 1_000L;
+//                }
+//                Date currentDate = new Date(Calendar.getInstance().getTime().getTime());
+//                Date newEndDate = new Date(currentDate.getTime() + delay);
+////                OrderDaoOLD.getInstance().changeStatusOfOrder(connection, orderID, OrderStatus.ON_HAND);
+////                OrderDaoOLD.getInstance().changeEndDateOfOrder(connection, orderID, newEndDate);
+//                BookService.getInstance().setBookBusy(request, entity.getBookId(), true);
+//            } else {
+//                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Проверьте статус заказа!");
+//            }
+//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//    }
+
     public void provideBook(HttpServletRequest request, int orderID) {
-        Connection connection = null;
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
-            OrdersEntity entity = null;
-//            OrdersEntity entity = OrderDaoOLD.getInstance().getById(connection, orderID);
-            if (BookService.getInstance().isBusy(request, entity.getBookId())) {
-                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Эта книга уже выдана!");
-                return;
-            }
-            if (entity.getStatus().equals(OrderStatus.ORDERED)) {
-                long delay = 0L;
-                if (PlaceOfIssue.HOME.equals(entity.getPlaceOfIssue())) {
-                    delay = 30L * 24L * 60L * 60L * 1_000L;
-                }
-                Date currentDate = new Date(Calendar.getInstance().getTime().getTime());
-                Date newEndDate = new Date(currentDate.getTime() + delay);
-//                OrderDaoOLD.getInstance().changeStatusOfOrder(connection, orderID, OrderStatus.ON_HAND);
-//                OrderDaoOLD.getInstance().changeEndDateOfOrder(connection, orderID, newEndDate);
-                BookService.getInstance().setBookBusy(request, entity.getBookId(), true);
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            OrdersEntity entity = orderDao.getById(orderID);
+            BooksEntity bookEntity = null;
+            if (entity != null) bookEntity = bookDao.getById(entity.getBookId());
+            if (entity == null || bookEntity.getIsBusy()) {
+                String message;
+                if (entity == null) message = "Не удалось обратиться к книге";
+                else message = "Эта книга уже выдана!";
+                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, message);
             } else {
-                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Проверьте статус заказа!");
+                if (entity.getStatus().equals(OrderStatus.ORDERED.toString())) {
+                    long delay = 0L;
+                    if (PlaceOfIssue.HOME.toString().equals(entity.getPlaceOfIssue())) {
+                        delay = 30L * 24L * 60L * 60L * 1_000L;
+                    }
+                    Date today = new Date();
+                    Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
+                    Date newEndDate = new Date(currentDate.getTime() + delay);
+
+                    entity.setStatus(OrderStatus.ON_HAND.toString());
+                    entity.setEndDate(newEndDate);
+                    orderDao.update(entity);
+                    log.info("Update order (commit)");
+                    bookEntity.setIsBusy(true);
+                    bookDao.update(bookEntity);
+                    log.info("Update book (commit)");
+                } else {
+                    request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Проверьте статус заказа!");
+                }
             }
-        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
+
+            transaction.commit();
+            log.info("Get order by id (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
         } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+            util.releaseSession(currentSession);
         }
     }
 

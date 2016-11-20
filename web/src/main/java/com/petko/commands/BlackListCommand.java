@@ -2,13 +2,13 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entitiesOLD.UserEntityOLD;
+import com.petko.entities.UsersEntity;
 import com.petko.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Set;
+import java.util.List;
 
 public class BlackListCommand extends AbstractCommand{
     private static BlackListCommand instance;
@@ -29,7 +29,7 @@ public class BlackListCommand extends AbstractCommand{
         String login = (String) session.getAttribute("user");
         if (service.isAdminUser(request, login)) {
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_BLACK_LIST);
-            Set<UserEntityOLD> blackList = service.getUsersByBlock(request, true);
+            List<UsersEntity> blackList = service.getUsersByBlock(request, true);
             session.setAttribute("blackList", blackList);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды

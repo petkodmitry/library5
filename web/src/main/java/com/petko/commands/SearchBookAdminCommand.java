@@ -2,7 +2,7 @@ package com.petko.commands;
 
 import com.petko.ResourceManager;
 import com.petko.constants.Constants;
-import com.petko.entitiesOLD.BookEntityOLD;
+import com.petko.entities.BooksEntity;
 import com.petko.services.BookService;
 import com.petko.services.UserService;
 
@@ -34,8 +34,7 @@ public class SearchBookAdminCommand extends AbstractCommand {
         if (userService.isAdminUser(request, login)) {
             String searchTextInBook;
             if ((searchTextInBook = request.getParameter("searchTextInBook")) != null && !"".equals(searchTextInBook)) {
-                List<BookEntityOLD> searchBookAdmin = null;
-//                List<BookEntityOLD> searchBookAdmin = service.getAllBooksByTitleOrAuthor(request, searchTextInBook);
+                List<BooksEntity> searchBookAdmin = service.searchBooksByTitleOrAuthor(request, searchTextInBook);
                 session.setAttribute("searchBookAdmin", searchBookAdmin);
             }
             setForwardPage(request, page);

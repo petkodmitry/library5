@@ -3,11 +3,8 @@ package com.petko.services;
 import com.petko.ActiveUsers;
 import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
-import com.petko.dao.UserDaoOLD;
 import com.petko.dao.UserDao;
-import com.petko.entitiesOLD.UserEntityOLD;
 import com.petko.entities.UsersEntity;
-import com.petko.managers.PoolManager;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -15,8 +12,6 @@ import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.*;
 
 public class UserService implements Service<UsersEntity> {
@@ -50,7 +45,7 @@ public class UserService implements Service<UsersEntity> {
     }
 
     /**
-     * closes request session and removes userfrom active users list
+     * closes request session and removes user from active users list
      * @param request - request to be closed
      * @param login - user to be logOut
      */
@@ -109,6 +104,8 @@ public class UserService implements Service<UsersEntity> {
     }
 
     public boolean isAdminUser(HttpServletRequest request, String login) {
+//        if (login == null) return true;
+        boolean result = false;
         Session currentSession = null;
         Transaction transaction = null;
         try {
@@ -116,8 +113,7 @@ public class UserService implements Service<UsersEntity> {
             transaction = currentSession.beginTransaction();
 
             UsersEntity user = userDao.getByLogin(login);
-            return user.getIsAdmin();
-//            return UserDaoOLD.getInstance().getUserStatus(connection, login) == 1;
+            if (user != null) result = user.getIsAdmin();
         } catch (DaoException e) {
             transaction.rollback();
             ExceptionsHandler.processException(request, e);
@@ -125,6 +121,7 @@ public class UserService implements Service<UsersEntity> {
         }  finally {
             util.releaseSession(currentSession);
         }
+        return result;
     }
 
 //    public Set<UserEntityOLD> getAllOLD(HttpServletRequest request) {
@@ -159,7 +156,6 @@ public class UserService implements Service<UsersEntity> {
         int max = 2;
         try {
             currentSession = util.getSession();
-//            currentSession = sessionFactory.getCurrentSession();
             transaction = currentSession.beginTransaction();
             int firstInt;
             if (page == null) {
@@ -183,19 +179,43 @@ public class UserService implements Service<UsersEntity> {
         return result;
     }
 
+//    public boolean isLoginExistsOLD(HttpServletRequest request, String login) {
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//            String entityLogin = UserDaoOLD.getInstance().getByLogin(connection, login).getLogin();
+//            if (login.equals(entityLogin)) return true;
+//        } catch (DaoException | SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//            return false;
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//        return false;
+//    }
+
     public boolean isLoginExists(HttpServletRequest request, String login) {
-        Connection connection = null;
+        boolean result = false;
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
-            String entityLogin = UserDaoOLD.getInstance().getByLogin(connection, login).getLogin();
-            if (login.equals(entityLogin)) return true;
-        } catch (DaoException | SQLException | ClassNotFoundException e) {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            UsersEntity userEntity = userDao.getByLogin(login);
+            String entityLogin = null;
+            if (userEntity != null) entityLogin = userEntity.getLogin();
+            if (login.equals(entityLogin)) result = true;
+
+            transaction.commit();
+            log.info("Get user by login (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
-            return false;
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+        }  finally {
+            util.releaseSession(currentSession);
         }
-        return false;
+        return result;
     }
 
     public boolean isAllPasswordRulesFollowed(String password, String repeatPassword) {
@@ -205,49 +225,131 @@ public class UserService implements Service<UsersEntity> {
         return password.equals(repeatPassword) && password.length() >= 8;
     }
 
-    public void addNewEntityToDataBase(HttpServletRequest request, String name, String lastName, String login, String password,
-                                boolean isAdmin, boolean isBlocked) {
-        Connection connection = null;
+//    public void addNewEntityToDataBaseOLD(HttpServletRequest request, String name, String lastName, String login, String password,
+//                                       boolean isAdmin, boolean isBlocked) {
+//        Connection connection = null;
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+//            UserEntityOLD entity = UserDaoOLD.getInstance().createNewEntity(name, lastName, login, password, isAdmin, isBlocked);
+//            UserDaoOLD.getInstance().add(connection, entity);
+//        } catch (DaoException | SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//    }
+
+    public void add(HttpServletRequest request, UsersEntity entity) {
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
-            UserEntityOLD entity = UserDaoOLD.getInstance().createNewEntity(name, lastName, login, password, isAdmin, isBlocked);
-            UserDaoOLD.getInstance().add(connection, entity);
-        } catch (DaoException | SQLException | ClassNotFoundException e) {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            userDao.save(entity);
+
+            transaction.commit();
+            log.info("Save user to DB (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+        }  finally {
+            util.releaseSession(currentSession);
         }
     }
 
     public void setBlockUser(HttpServletRequest request, String login, boolean isBlocked) {
-        Connection connection = null;
+        Session currentSession = null;
+        Transaction transaction = null;
         try {
-            connection = PoolManager.getInstance().getConnection();
-            UserEntityOLD entity = UserDaoOLD.getInstance().getByLogin(connection, login);
-            entity.setBlocked(isBlocked);
-            UserDaoOLD.getInstance().update(connection, entity);
-        } catch (DaoException | SQLException | ClassNotFoundException e) {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            UsersEntity entity = userDao.getByLogin(login);
+            if (entity != null) {
+                entity.setIsBlocked(isBlocked);
+                userDao.update(entity);
+            }
+
+            transaction.commit();
+            log.info("Get user by login (commit)");
+            log.info("Update user (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+        }  finally {
+            util.releaseSession(currentSession);
         }
     }
 
-    public Set<UserEntityOLD> getUsersByBlock(HttpServletRequest request, boolean isBlocked) {
-        Connection connection = null;
-        Set<UserEntityOLD> allByBlock = new HashSet<>();
+    /**/
+//    public Set<UserEntityOLD> getUsersByBlockOLD(HttpServletRequest request, boolean isBlocked) {
+//        Connection connection = null;
+//        Set<UserEntityOLD> allByBlock = new HashSet<>();
+//        try {
+//            connection = PoolManager.getInstance().getConnection();
+////            connection.setAutoCommit(false);
+//            allByBlock = UserDaoOLD.getInstance().getAllByBlock(connection, isBlocked);
+//        } catch (DaoException | SQLException | ClassNotFoundException e) {
+//            ExceptionsHandler.processException(request, e);
+//            return Collections.emptySet();
+//        } finally {
+//            PoolManager.getInstance().releaseConnection(connection);
+//        }
+//        return allByBlock;
+//    }
+
+    public List<UsersEntity> getUsersByBlock(HttpServletRequest request, boolean isBlocked) {
+        Session currentSession = null;
+        Transaction transaction = null;
+        List<UsersEntity> allByBlock = new ArrayList<>();
         try {
-            connection = PoolManager.getInstance().getConnection();
-//            connection.setAutoCommit(false);
-            allByBlock = UserDaoOLD.getInstance().getAllByBlock(connection, isBlocked);
-        } catch (DaoException | SQLException | ClassNotFoundException e) {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            allByBlock = userDao.getAllByBlockStatus(isBlocked);
+            transaction.commit();
+            log.info("Get all users by block status (commit)");
+        } catch (DaoException e) {
+            transaction.rollback();
             ExceptionsHandler.processException(request, e);
-            return Collections.emptySet();
-        } finally {
-            PoolManager.getInstance().releaseConnection(connection);
+            return Collections.emptyList();
+        }  finally {
+            util.releaseSession(currentSession);
         }
         return allByBlock;
     }
+
+    public boolean isAllRegisterDataEntered (UsersEntity regData, String repeatPassword) {
+        return !"".equals(regData.getFirstName()) &&
+                !"".equals(regData.getLastName()) &&
+                !"".equals(regData.getLogin()) &&
+                !"".equals(regData.getPassword()) &&
+                !"".equals(repeatPassword);
+    }
+
+    public UsersEntity setAllDataOfEntity(UsersEntity result, String firstName, String lastName, String login, String password,
+                                       boolean isAdmin, boolean isBlocked) {
+        result.setFirstName(firstName);
+        result.setLastName(lastName);
+        result.setLogin(login);
+        result.setPassword(password);
+        result.setIsAdmin(isAdmin);
+        result.setIsBlocked(isBlocked);
+        return result;
+    }
+
+    /*public UsersEntity createNewEntity(String firstName, String lastName, String login, String password,
+                                       boolean isAdmin, boolean isBlocked) {
+        UsersEntity result = new UsersEntity();
+        result.setFirstName(firstName);
+        result.setLastName(lastName);
+        result.setLogin(login);
+        result.setPassword(password);
+        result.setIsAdmin(isAdmin);
+        result.setIsBlocked(isBlocked);
+        return result;
+    }*/
 
     public void add(UsersEntity entity) {}
 
@@ -259,9 +361,7 @@ public class UserService implements Service<UsersEntity> {
         return null;
     }
 
-    public void update(UsersEntity entity) {
-
-    }
+    public void update(UsersEntity entity) {}
 
     public void delete(int id) {
 

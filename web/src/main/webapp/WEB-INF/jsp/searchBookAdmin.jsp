@@ -41,7 +41,6 @@
                 <td>Автор</td>
                 <td>Свободна/На руках</td>
                 <td>Удалить из базы</td>
-                <%--<td>Заказ в ЧЗ</td>--%>
             </tr>
             <c:forEach items="${searchBookAdmin}" var="book">
                 <tr>
@@ -49,11 +48,11 @@
                     <td>${book.getTitle()}</td>
                     <td>${book.getAuthor()}</td>
                     <td>
-                        <c:if test="${book.isBusy() == false}">Available</c:if>
-                        <c:if test="${book.isBusy() == true}">On Hand</c:if>
+                        <c:if test="${book.getIsBusy() == false}">Available</c:if>
+                        <c:if test="${book.getIsBusy() == true}">On Hand</c:if>
                     </td>
                     <td>
-                        <c:if test="${book.isBusy() == false}">
+                        <c:if test="${book.getIsBusy() == false}">
                             <a href="controller?cmd=deleteBook&bookId=${book.getBookId()}">Удалить</a>
                         </c:if>
                     </td>

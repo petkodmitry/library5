@@ -1,10 +1,14 @@
 package com.petko.dao;
 
 import com.petko.DaoException;
+import com.petko.entities.BooksEntity;
 import com.petko.entities.UsersEntity;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+
+import java.util.List;
+import java.util.Set;
 
 public class UserDao extends BaseDao<UsersEntity> {
     private static Logger log = Logger.getLogger(UserDao.class);
@@ -31,6 +35,42 @@ public class UserDao extends BaseDao<UsersEntity> {
             log.info("get user by login");
         } catch (HibernateException e) {
             String message = "Error getting user by login in UserDao";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+        return result;
+    }
+
+    public List<UsersEntity> getAllByCoupleLogins(Set<String> logins) throws DaoException {
+        List<UsersEntity> result;
+        try {
+            session = util.getSession();
+            String hql = "SELECT U FROM UsersEntity U WHERE U.login IN :loginsParam";
+            Query query = session.createQuery(hql);
+            query.setParameterList("loginsParam", logins);
+            result = query.list();
+
+            log.info("getAllByCoupleLogins in UserDao");
+        } catch (HibernateException e) {
+            String message = "Error getAllByCoupleLogins in UserDao";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+        return result;
+    }
+
+    public List<UsersEntity> getAllByBlockStatus(Boolean isBlocked) throws DaoException {
+        List<UsersEntity> result;
+        try {
+            session = util.getSession();
+            String hql = "SELECT U FROM UsersEntity U WHERE U.isBlocked=:blockParam";
+            Query query = session.createQuery(hql);
+            query.setParameter("blockParam", isBlocked);
+            result = query.list();
+
+            log.info("getAllByBlockStatus in UserDao");
+        } catch (HibernateException e) {
+            String message = "Error getAllByBlockStatus in UserDao";
             log.error(message + e);
             throw new DaoException(message);
         }

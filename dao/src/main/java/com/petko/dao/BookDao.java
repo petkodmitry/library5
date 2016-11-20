@@ -2,17 +2,10 @@ package com.petko.dao;
 
 import com.petko.DaoException;
 import com.petko.entities.BooksEntity;
-import com.petko.entitiesOLD.BookEntityOLD;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
