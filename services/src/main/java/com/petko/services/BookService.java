@@ -4,15 +4,12 @@ import com.petko.DaoException;
 import com.petko.ExceptionsHandler;
 import com.petko.dao.BookDao;
 import com.petko.entities.BooksEntity;
-import com.petko.managers.PoolManager;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.*;
 
 public class BookService implements Service<BooksEntity>{
