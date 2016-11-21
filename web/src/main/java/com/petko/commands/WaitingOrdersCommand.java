@@ -32,7 +32,7 @@ public class WaitingOrdersCommand extends AbstractCommand{
         if (userService.isAdminUser(request, login)) {
             OrderService service = OrderService.getInstance();
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_WAITING_ORDERS);
-            List<FullOrdersList> waitingOrdersList = service.getOrdersByStatus(request, OrderStatus.ORDERED);
+            List<FullOrdersList> waitingOrdersList = service.getOrdersByLoginAndStatus(request, null, OrderStatus.ORDERED);
             session.setAttribute("waitingOrdersList", waitingOrdersList);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды

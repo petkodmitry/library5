@@ -49,40 +49,18 @@ public class OrderService {
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
-            /**
-             * getting required List of orders, but without Book details (book ID only)
-             */
+            // getting required List of orders, but without Book details (book ID only)
             List<OrdersEntity> orderEntityList = orderDao.getOrdersByLoginAndStatus(login, orderStatus);
 
             if (!orderEntityList.isEmpty()) {
-                /**
-                 * getting IDs of all books in received List
-                 */
-                Set<Integer> bookIds = new HashSet<>();
-                for (OrdersEntity entity : orderEntityList) {
-                    bookIds.add(entity.getBookId());
-                }
-                /**
-                 * receiving a List of the Books by Set of IDs.
-                 * creating a Map of IDs-Books, for easier way to get Book's properties by ID without DataBase queries
-                 */
+                // getting IDs of all books in received List
+                Set<Integer> bookIds = orderEntityList.stream().map(OrdersEntity::getBookId).collect(Collectors.toSet());
+                // receiving a List of the Books by Set of IDs.
                 List<BooksEntity> booksEntities = bookDao.getAllByCoupleIds(bookIds);
-                Map<Integer, BooksEntity> booksMap = new HashMap<>();
-                for (BooksEntity book : booksEntities) {
-                    booksMap.put(book.getBookId(), book);
-                }
-                /**
-                 * building an FullOrdersList entity and passing it to the result List
-                 */
-                for (OrdersEntity entity : orderEntityList) {
-                    int bookId = entity.getBookId();
-                    BooksEntity book = booksMap.get(bookId);
-                    FullOrdersList orderView = new FullOrdersList(entity.getOrderId(), entity.getLogin(), bookId,
-                            entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
-                    orderView.setTitle(book.getTitle());
-                    orderView.setAuthor(book.getAuthor());
-                    result.add(orderView);
-                }
+                // creating a Map of IDs-Books, for easier way to get Book's properties by ID without DataBase queries
+                Map<Integer, BooksEntity> booksMap = getMapOfIDsAndBooks(booksEntities);
+                // building an FullOrdersList entity and passing it to the result List
+                result = buildFullOrdersList(orderEntityList, booksMap, null, null);
                 log.info("Get all books by couple ids (commit)");
             }
 
@@ -98,63 +76,11 @@ public class OrderService {
         return result;
     }
 
-    //TODO объединить с getOrdersByLoginAndStatus()
-    public List<FullOrdersList> getOrdersByStatus(HttpServletRequest request, OrderStatus orderStatus) {
-        List<FullOrdersList> result = new ArrayList<>();
-        Session currentSession = null;
-        Transaction transaction = null;
-        try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
-            List<OrdersEntity> listByStatus = orderDao.getOrdersByLoginAndStatus(null, orderStatus);
-//            List<OrdersEntity> listByDate = orderDao.getOrdersByLoginAndStatus(null, orderStatus);
-
-            if (!listByStatus.isEmpty()) {
-                /**
-                 * getting IDs of all books in received List
-                 */
-                Set<Integer> bookIds = new HashSet<>();
-                for (OrdersEntity entity : listByStatus) {
-                    bookIds.add(entity.getBookId());
-                }
-                /**
-                 * receiving a List of the Books by Set of IDs.
-                 * creating a Map of IDs-Books, for easier way to get Book's properties by ID without DataBase queries
-                 */
-                List<BooksEntity> booksEntities = bookDao.getAllByCoupleIds(bookIds);
-                Map<Integer, BooksEntity> booksMap = new HashMap<>();
-                for (BooksEntity book : booksEntities) {
-                    booksMap.put(book.getBookId(), book);
-                }
-                /**
-                 * building an FullOrdersList entity and passing it to the result List
-                 */
-                for (OrdersEntity entity : listByStatus) {
-                    int bookId = entity.getBookId();
-                    BooksEntity book = booksMap.get(bookId);
-                    FullOrdersList orderView = new FullOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
-                            entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
-                    orderView.setTitle(book.getTitle());
-                    orderView.setAuthor(book.getAuthor());
-                    result.add(orderView);
-                }
-                log.info("Get all books by couple ids (commit)");
-            }
-
-            transaction.commit();
-            log.info("Get orders by login and status (commit)");
-        } catch (DaoException e) {
-            transaction.rollback();
-            ExceptionsHandler.processException(request, e);
-            return Collections.emptyList();
-        } finally {
-            util.releaseSession(currentSession);
-        }
-        return result;
-    }
-
-    //TODO объединить с getOrdersByLoginAndStatus()
+    /**
+     * getting expired orders list by endDate
+     * @param request - current http request
+     * @return the List of orders according to the conditions
+     */
     public List<FullOrdersList> getExpiredOrders(HttpServletRequest request) {
         List<FullOrdersList> result = new ArrayList<>();
         OrderStatus orderStatus = OrderStatus.ON_HAND;
@@ -166,58 +92,23 @@ public class OrderService {
 
             Date today = new Date();
             Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
-
             List<OrdersEntity> listByStatus = orderDao.getOrdersByStatusAndEndDate(orderStatus, currentDate);
 
             if (!listByStatus.isEmpty()) {
-                /**
-                 * getting IDs of all books in received List
-                 */
+                // getting IDs of all books in received List
                 Set<Integer> bookIds = listByStatus.stream().map(OrdersEntity::getBookId).collect(Collectors.toSet());
-
-                /**
-                 * getting all Logins from received List
-                 */
+                // getting all Logins from received List
                 Set<String> allLogins = listByStatus.stream().map(OrdersEntity::getLogin).collect(Collectors.toSet());
-
-                /**
-                 * receiving a List of the Books by Set of IDs.
-                 * creating a Map of IDs-Books, for easier way to get Book's properties by ID without DataBase queries
-                 */
+                // receiving a List of the Books by Set of IDs.
                 List<BooksEntity> booksEntities = bookDao.getAllByCoupleIds(bookIds);
-                Map<Integer, BooksEntity> booksMap = new HashMap<>();
-                for (BooksEntity book : booksEntities) {
-                    booksMap.put(book.getBookId(), book);
-                }
-
-                /**
-                 * receiving a List of the Users by Set of Logins.
-                 * creating a Map of logins-Users, for easier way to get User's properties by Login without DataBase queries
-                 */
+                // creating a Map of IDs-Books, for easier way to get Book's properties by ID without DataBase queries
+                Map<Integer, BooksEntity> booksMap = getMapOfIDsAndBooks(booksEntities);
+                // receiving a List of the Users by Set of Logins.
                 List<UsersEntity> usersEntities = userDao.getAllByCoupleLogins(allLogins);
-                Map<String, UsersEntity> usersMap = new HashMap<>();
-                for (UsersEntity user : usersEntities) {
-                    usersMap.put(user.getLogin(), user);
-                }
-
-                /**
-                 * building an FullOrdersList entity and passing it to the result List
-                 */
-                long oneDay = 24L * 60L * 60L * 1_000L;
-                for (OrdersEntity entity : listByStatus) {
-                    int delayDays = (int) ((currentDate.getTime() - entity.getEndDate().getTime())/oneDay);
-                    int bookId = entity.getBookId();
-                    BooksEntity book = booksMap.get(bookId);
-                    String login = entity.getLogin();
-                    UsersEntity user = usersMap.get(login);
-                    FullOrdersList orderView = new FullOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
-                            entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
-                    orderView.setTitle(book.getTitle());
-                    orderView.setAuthor(book.getAuthor());
-                    orderView.setBlocked(user.getIsBlocked());
-                    orderView.setDelayDays(delayDays);
-                    result.add(orderView);
-                }
+                // creating a Map of logins-Users, for easier way to get User's properties by Login without DataBase queries
+                Map<String, UsersEntity> usersMap = getMapOfLoginsAndUsers(usersEntities);
+                // building an FullOrdersList entity and passing it to the result List
+                result = buildFullOrdersList(listByStatus, booksMap, usersMap, currentDate);
                 log.info("Get all books by couple ids (commit)");
                 log.info("Get all users by couple logins (commit)");
             }
@@ -463,6 +354,47 @@ public class OrderService {
         result.setPlaceOfIssue(place);
         result.setStartDate(startDate);
         result.setEndDate(endDate);
+        return result;
+    }
+
+    private Map<Integer, BooksEntity> getMapOfIDsAndBooks(List<BooksEntity> booksEntities) {
+        Map<Integer, BooksEntity> booksMap = new HashMap<>();
+        for (BooksEntity book : booksEntities) {
+            booksMap.put(book.getBookId(), book);
+        }
+        return booksMap;
+    }
+
+    private Map<String, UsersEntity> getMapOfLoginsAndUsers(List<UsersEntity> usersEntities) {
+        Map<String, UsersEntity> usersMap = new HashMap<>();
+        for (UsersEntity user : usersEntities) {
+            usersMap.put(user.getLogin(), user);
+        }
+        return usersMap;
+    }
+
+    private List<FullOrdersList> buildFullOrdersList(List<OrdersEntity> orderEntityList, Map<Integer, BooksEntity> booksMap,
+                                                     Map<String, UsersEntity> usersMap, Date currentDate) {
+        List<FullOrdersList> result = new ArrayList<>();
+        for (OrdersEntity entity : orderEntityList) {
+            int bookId = entity.getBookId();
+            BooksEntity book = booksMap.get(bookId);
+            String login = entity.getLogin();
+            FullOrdersList orderView = new FullOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
+                    entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
+            orderView.setTitle(book.getTitle());
+            orderView.setAuthor(book.getAuthor());
+            if (usersMap != null) {
+                UsersEntity user = usersMap.get(login);
+                orderView.setBlocked(user.getIsBlocked());
+            }
+            if (currentDate != null) {
+                long oneDay = 24L * 60L * 60L * 1_000L;
+                int delayDays = (int) ((currentDate.getTime() - entity.getEndDate().getTime()) / oneDay);
+                orderView.setDelayDays(delayDays);
+            }
+            result.add(orderView);
+        }
         return result;
     }
 }

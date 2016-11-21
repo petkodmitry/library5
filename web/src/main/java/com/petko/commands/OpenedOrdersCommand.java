@@ -32,7 +32,7 @@ public class OpenedOrdersCommand extends AbstractCommand{
         if (userService.isAdminUser(request, login)) {
             OrderService service = OrderService.getInstance();
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_OPENED_ORDERS);
-            List<FullOrdersList> openedOrdersList = service.getOrdersByStatus(request, OrderStatus.ON_HAND);
+            List<FullOrdersList> openedOrdersList = service.getOrdersByLoginAndStatus(request, null, OrderStatus.ON_HAND);
             session.setAttribute("openedOrdersList", openedOrdersList);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды
