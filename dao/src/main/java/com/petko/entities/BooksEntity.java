@@ -15,36 +15,60 @@ public class BooksEntity extends Entity {
     private String author;
     private Boolean isBusy;
 
+    /**
+     * @return bookId
+     */
     @Id
     @Column(name = "bid", nullable = false, unique = true)
     public int getBookId() {
         return bookId;
     }
 
+    /**
+     * Sets bookId
+     * @param bid - bookId
+     */
     public void setBookId(int bid) {
         this.bookId = bid;
     }
 
+    /**
+     * @return title
+     */
     @Basic
     @Column(name = "title", nullable = true, length = 50)
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Sets title
+     * @param title - title
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * @return author
+     */
     @Basic
     @Column(name = "author", nullable = true, length = 20)
     public String getAuthor() {
         return author;
     }
 
+    /**
+     * Sets author
+     * @param author - author
+     */
     public void setAuthor(String author) {
         this.author = author;
     }
 
+    /**
+     * @return busy status
+     */
     @Basic
     @Type(type = "yes_no")
     @Column(name = "isbusy", nullable = true)
@@ -52,6 +76,10 @@ public class BooksEntity extends Entity {
         return isBusy;
     }
 
+    /**
+     * Sets busy status
+     * @param isbusy - isBusy
+     */
     public void setIsBusy(Boolean isbusy) {
         this.isBusy = isbusy;
     }

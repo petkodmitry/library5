@@ -24,6 +24,12 @@ public class BookDao extends BaseDao<BooksEntity> {
         return instance;
     }
 
+    /**
+     *
+     * @param ids - Set of IDs for searching
+     * @return List of BooksEntity considering given options
+     * @throws DaoException
+     */
     public List<BooksEntity> getAllByCoupleIds(Set<Integer> ids) throws DaoException {
         List<BooksEntity> result;
         try {
@@ -42,6 +48,13 @@ public class BookDao extends BaseDao<BooksEntity> {
         return result;
     }
 
+    /**
+     *
+     * @param searchTextInBook - what to search in Book
+     * @param status - desired status
+     * @return List of BooksEntity considering given options
+     * @throws DaoException
+     */
     public List<BooksEntity> getBooksByTitleOrAuthorAndStatus(String searchTextInBook, Boolean status) throws DaoException {
         searchTextInBook = "%" + searchTextInBook + "%";
         List<BooksEntity> result;
@@ -71,6 +84,13 @@ public class BookDao extends BaseDao<BooksEntity> {
         return result;
     }
 
+    /**
+     *
+     * @param title - title of the Book
+     * @param author - author of the Book
+     * @param isBusy - status
+     * @return a new BooksEntity
+     */
     public BooksEntity createNewEntity(String title, String author, boolean isBusy) {
         BooksEntity result = new BooksEntity();
         result.setTitle(title);

@@ -22,6 +22,12 @@ public class SeminarDao extends BaseDao<SeminarsEntity> {
         return instance;
     }
 
+    /**
+     * all seminars of a User
+     * @param login - desired User
+     * @return List of SeminarsEntity considering given options
+     * @throws DaoException
+     */
     public List<SeminarsEntity> getSeminarsByLogin(String login) throws DaoException {
         List<SeminarsEntity> result;
         try {
@@ -41,6 +47,11 @@ public class SeminarDao extends BaseDao<SeminarsEntity> {
         return result;
     }
 
+    /**
+     * all future Seminars
+     * @return List of future Seminars
+     * @throws DaoException
+     */
     public List<SeminarsEntity> getAll() throws DaoException{
         List<SeminarsEntity> result;
         try {

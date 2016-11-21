@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
-public class UserService implements Service<UsersEntity> {
+public class UserService {
     private static UserService instance;
     private static Logger log = Logger.getLogger(UserService.class);
     private static UserDao userDao = UserDao.getInstance();
@@ -30,23 +30,25 @@ public class UserService implements Service<UsersEntity> {
         return instance;
     }
 
+    /**
+     * Adds into active users List
+     * @param login to be added
+     */
     private void addToActiveUsers(String login) {
-        /**
-         * adds into List<String> active users
-         */
         ActiveUsers.addUser(login);
     }
 
+    /**
+     * Removes from active users List
+     * @param login to be removed
+     */
     private void removeFromActiveUsers(String login) {
-        /**
-         * removes from List<String> active users
-         */
         ActiveUsers.removeUser(login);
     }
 
     /**
      * closes request session and removes user from active users list
-     * @param request - request to be closed
+     * @param request - current http request
      * @param login - user to be logOut
      */
     public void logOut(HttpServletRequest request, String login) {
@@ -54,28 +56,13 @@ public class UserService implements Service<UsersEntity> {
         request.getSession().invalidate();
     }
 
-//    public boolean isLoginSuccessOLD(HttpServletRequest request, String login, String password) {
-//        if (login == null || password == null) return false;
-//        Connection connection = null;
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-//            connection.setAutoCommit(false);
-//            if (UserDaoOLD.getInstance().isLoginSuccess(connection, login, password)) {
-//                connection.commit();
-//                addToActiveUsers(login);
-//                return true;
-//            } else {
-//                connection.rollback();
-//                return false;
-//            }
-//        } catch (DaoException | SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//            return false;
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//    }
-
+    /**
+     * Checks if user is already logged in
+     * @param request - current http request
+     * @param login to be checked
+     * @param password to be checked
+     * @return succes or not
+     */
     public boolean isLoginSuccess(HttpServletRequest request, String login, String password) {
         if (login == null || password == null) return false;
         Session currentSession = null;
@@ -103,8 +90,13 @@ public class UserService implements Service<UsersEntity> {
         }
     }
 
+    /**
+     * Checks if the User is Admin or not
+     * @param request - current http request
+     * @param login to be checked
+     * @return admin or not (true or false)
+     */
     public boolean isAdminUser(HttpServletRequest request, String login) {
-//        if (login == null) return true;
         boolean result = false;
         Session currentSession = null;
         Transaction transaction = null;
@@ -124,30 +116,12 @@ public class UserService implements Service<UsersEntity> {
         return result;
     }
 
-//    public Set<UserEntityOLD> getAllOLD(HttpServletRequest request) {
-//        Connection connection = null;
-//        Set<UserEntityOLD> result = new HashSet<>();
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-//            connection.setAutoCommit(false);
-//            Set<String> allLogins = UserDaoOLD.getInstance().getAllLogins(connection);
-//            for (String login : allLogins) {
-//                result.add(UserDaoOLD.getInstance().getByLogin(connection, login));
-//            }
-//            if (allLogins.size() == result.size()) connection.commit();
-//            else {
-//                result = Collections.emptySet();
-//                connection.rollback();
-//            }
-//        } catch (DaoException | SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//            return Collections.emptySet();
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//        return result;
-//    }
-
+    /**
+     * gives List of all Users
+     * @param request - current http request
+     * @param page to be shown in WEB
+     * @return List of all Users
+     */
     public List<UsersEntity> getAll(HttpServletRequest request, String page/*, int max*/) {
         List<UsersEntity> result = new ArrayList<>();
         Session currentSession = null;
@@ -179,21 +153,12 @@ public class UserService implements Service<UsersEntity> {
         return result;
     }
 
-//    public boolean isLoginExistsOLD(HttpServletRequest request, String login) {
-//        Connection connection = null;
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-//            String entityLogin = UserDaoOLD.getInstance().getByLogin(connection, login).getLogin();
-//            if (login.equals(entityLogin)) return true;
-//        } catch (DaoException | SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//            return false;
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//        return false;
-//    }
-
+    /**
+     * Checks if login exists in DataBase
+     * @param request - current http request
+     * @param login to be checked
+     * @return exist or not (true or false)
+     */
     public boolean isLoginExists(HttpServletRequest request, String login) {
         boolean result = false;
         Session currentSession = null;
@@ -218,27 +183,21 @@ public class UserService implements Service<UsersEntity> {
         return result;
     }
 
+    /**
+     * check for equality and the length
+     * @param password to be checked
+     * @param repeatPassword to check for equality with password
+     * @return true or false
+     */
     public boolean isAllPasswordRulesFollowed(String password, String repeatPassword) {
-        /**
-         * check for equality and the length
-         */
         return password.equals(repeatPassword) && password.length() >= 8;
     }
 
-//    public void addNewEntityToDataBaseOLD(HttpServletRequest request, String name, String lastName, String login, String password,
-//                                       boolean isAdmin, boolean isBlocked) {
-//        Connection connection = null;
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-//            UserEntityOLD entity = UserDaoOLD.getInstance().createNewEntity(name, lastName, login, password, isAdmin, isBlocked);
-//            UserDaoOLD.getInstance().add(connection, entity);
-//        } catch (DaoException | SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//    }
-
+    /**
+     * Adds User to DataBase
+     * @param request - current http request
+     * @param entity to be added
+     */
     public void add(HttpServletRequest request, UsersEntity entity) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -253,11 +212,17 @@ public class UserService implements Service<UsersEntity> {
         } catch (DaoException e) {
             transaction.rollback();
             ExceptionsHandler.processException(request, e);
-        }  finally {
+        } finally {
             util.releaseSession(currentSession);
         }
     }
 
+    /**
+     * Changes the status of the User
+     * @param request - current http request
+     * @param login to be updeted
+     * @param isBlocked - status to be setted
+     */
     public void setBlockUser(HttpServletRequest request, String login, boolean isBlocked) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -282,23 +247,12 @@ public class UserService implements Service<UsersEntity> {
         }
     }
 
-    /**/
-//    public Set<UserEntityOLD> getUsersByBlockOLD(HttpServletRequest request, boolean isBlocked) {
-//        Connection connection = null;
-//        Set<UserEntityOLD> allByBlock = new HashSet<>();
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-////            connection.setAutoCommit(false);
-//            allByBlock = UserDaoOLD.getInstance().getAllByBlock(connection, isBlocked);
-//        } catch (DaoException | SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//            return Collections.emptySet();
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//        return allByBlock;
-//    }
-
+    /**
+     * Gets Users by their status
+     * @param request - current http request
+     * @param isBlocked - status to be searched
+     * @return Users by their status
+     */
     public List<UsersEntity> getUsersByBlock(HttpServletRequest request, boolean isBlocked) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -320,6 +274,12 @@ public class UserService implements Service<UsersEntity> {
         return allByBlock;
     }
 
+    /**
+     * Checks if all register data is entered
+     * @param regData - all data to be checked
+     * @param repeatPassword to compare with password
+     * @return true or false
+     */
     public boolean isAllRegisterDataEntered (UsersEntity regData, String repeatPassword) {
         return !"".equals(regData.getFirstName()) &&
                 !"".equals(regData.getLastName()) &&
@@ -328,6 +288,17 @@ public class UserService implements Service<UsersEntity> {
                 !"".equals(repeatPassword);
     }
 
+    /**
+     * Creates and gives a new User
+     * @param result - result
+     * @param firstName - firstName
+     * @param lastName - lastName
+     * @param login - login
+     * @param password - password
+     * @param isAdmin - isAdmin
+     * @param isBlocked - isBlocked
+     * @return a new User
+     */
     public UsersEntity setAllDataOfEntity(UsersEntity result, String firstName, String lastName, String login, String password,
                                        boolean isAdmin, boolean isBlocked) {
         result.setFirstName(firstName);
@@ -337,33 +308,5 @@ public class UserService implements Service<UsersEntity> {
         result.setIsAdmin(isAdmin);
         result.setIsBlocked(isBlocked);
         return result;
-    }
-
-    /*public UsersEntity createNewEntity(String firstName, String lastName, String login, String password,
-                                       boolean isAdmin, boolean isBlocked) {
-        UsersEntity result = new UsersEntity();
-        result.setFirstName(firstName);
-        result.setLastName(lastName);
-        result.setLogin(login);
-        result.setPassword(password);
-        result.setIsAdmin(isAdmin);
-        result.setIsBlocked(isBlocked);
-        return result;
-    }*/
-
-    public void add(UsersEntity entity) {}
-
-    public List<UsersEntity> getAll() {
-        return null;
-    }
-
-    public UsersEntity getByLogin(String login) {
-        return null;
-    }
-
-    public void update(UsersEntity entity) {}
-
-    public void delete(int id) {
-
     }
 }

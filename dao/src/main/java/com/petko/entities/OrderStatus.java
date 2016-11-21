@@ -5,6 +5,11 @@ public enum OrderStatus {
     ON_HAND,
     CLOSED;
 
+    /**
+     * gives OrderStatus by its String mapping
+     * @param mapping of OrderStatus elements
+     * @return OrderStatus by its String mapping
+     */
     public static OrderStatus getOrderStatus(String mapping) {
         switch (mapping) {
             case "Открыт":
@@ -18,6 +23,10 @@ public enum OrderStatus {
         }
     }
 
+    /**
+     * gives String mapping of OrderStatus
+     * @return String mapping of OrderStatus
+     */
     @Override
     public String toString() {
         switch (ordinal()) {

@@ -15,7 +15,7 @@ import org.hibernate.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-public class SeminarService implements Service<SeminarsEntity>{
+public class SeminarService {
     private static SeminarService instance;
     private static Logger log = Logger.getLogger(SeminarService.class);
     private static SeminarDao seminarDao = SeminarDao.getInstance();
@@ -31,6 +31,12 @@ public class SeminarService implements Service<SeminarsEntity>{
         return instance;
     }
 
+    /**
+     * gives List of Seminars for User
+     * @param request - current http request
+     * @param login - login of the User
+     * @return List of Seminars for User
+     */
     public List<SeminarsEntity> getSeminarsByLogin(HttpServletRequest request, String login) {
         List<SeminarsEntity> result = new ArrayList<>();
         Session currentSession = null;
@@ -52,27 +58,12 @@ public class SeminarService implements Service<SeminarsEntity>{
         return result;
     }
 
-    public Set<UsersEntity> getUsersBySeminar(HttpServletRequest request, Integer seminarId) {
-        Set<UsersEntity> result = new HashSet<>();
-        Session currentSession = null;
-        Transaction transaction = null;
-        try {
-            currentSession = util.getSession();
-            transaction = currentSession.beginTransaction();
-
-            result = seminarDao.getById(seminarId).getUsers();
-
-            transaction.commit();
-            log.info("Get seminar by id (commit)");
-        } catch (DaoException e) {
-            transaction.rollback();
-            ExceptionsHandler.processException(request, e);
-        } finally {
-            util.releaseSession(currentSession);
-        }
-        return result;
-    }
-
+    /**
+     * Subscribe User to Seminar
+     * @param request - current http request
+     * @param login of the User to subscribe
+     * @param seminarId to be subscribed
+     */
     public void subscribeToSeminar(HttpServletRequest request, String login, int seminarId) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -96,6 +87,12 @@ public class SeminarService implements Service<SeminarsEntity>{
         }
     }
 
+    /**
+     * UnSubscribe User from Seminar
+     * @param request - current http request
+     * @param login of the User to unSubscribe
+     * @param seminarId to be unSubscribed
+     */
     public void unSubscribeSeminar(HttpServletRequest request, String login, int seminarId) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -118,6 +115,12 @@ public class SeminarService implements Service<SeminarsEntity>{
         }
     }
 
+    /**
+     * gives List of Seminars for specific User
+     * @param request - current http request
+     * @param login to be searched in seminars
+     * @return List of Seminars for specific User
+     */
     public List<SeminarsEntity> availableSeminarsForLogin(HttpServletRequest request, String login) {
         List<SeminarsEntity> result = new ArrayList<>();
         Session currentSession = null;
@@ -141,6 +144,11 @@ public class SeminarService implements Service<SeminarsEntity>{
         return result;
     }
 
+    /**
+     * gives all future Seminars
+     * @param request - current http request
+     * @return all future Seminars
+     */
     public List<SeminarsEntity> getAll(HttpServletRequest request) {
         List<SeminarsEntity> result = new ArrayList<>();
         Session currentSession = null;
@@ -162,6 +170,11 @@ public class SeminarService implements Service<SeminarsEntity>{
         return result;
     }
 
+    /**
+     * adds SeminarsEntity to DataBase
+     * @param request - current http request
+     * @param entity to be added
+     */
     public void add(HttpServletRequest request, SeminarsEntity entity) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -169,7 +182,6 @@ public class SeminarService implements Service<SeminarsEntity>{
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
 
-//            seminarDao.saveOrUpdate(entity);
             seminarDao.save(entity);
 
             transaction.commit();
@@ -182,6 +194,11 @@ public class SeminarService implements Service<SeminarsEntity>{
         }
     }
 
+    /**
+     * removes SeminarsEntity from DataBase
+     * @param request - current http request
+     * @param id of the Seminar to be deleted
+     */
     public void delete(HttpServletRequest request, int id) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -206,6 +223,12 @@ public class SeminarService implements Service<SeminarsEntity>{
         }
     }
 
+    /**
+     * gives Seminar by its ID
+     * @param request - current http request
+     * @param id to be searched
+     * @return Seminar by its ID
+     */
     public SeminarsEntity getById(HttpServletRequest request, int id) {
         SeminarsEntity result = null;
         Session currentSession = null;
@@ -225,22 +248,5 @@ public class SeminarService implements Service<SeminarsEntity>{
             util.releaseSession(currentSession);
         }
         return result;
-    }
-
-    public void add(SeminarsEntity entity) {
-    }
-
-    public List<SeminarsEntity> getAll() {
-        return null;
-    }
-
-    public SeminarsEntity getByLogin(String login) {
-        return null;
-    }
-
-    public void update(SeminarsEntity entity) {
-    }
-
-    public void delete(int id) {
     }
 }

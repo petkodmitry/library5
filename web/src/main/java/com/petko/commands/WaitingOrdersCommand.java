@@ -5,7 +5,7 @@ import com.petko.constants.Constants;
 import com.petko.entities.OrderStatus;
 import com.petko.services.OrderService;
 import com.petko.services.UserService;
-import com.petko.vo.AnyStatusOrdersList;
+import com.petko.vo.FullOrdersList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +32,7 @@ public class WaitingOrdersCommand extends AbstractCommand{
         if (userService.isAdminUser(request, login)) {
             OrderService service = OrderService.getInstance();
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_WAITING_ORDERS);
-            List<AnyStatusOrdersList> waitingOrdersList = service.getOrdersByStatus(request, OrderStatus.ORDERED);
+            List<FullOrdersList> waitingOrdersList = service.getOrdersByStatus(request, OrderStatus.ORDERED);
             session.setAttribute("waitingOrdersList", waitingOrdersList);
             setForwardPage(request, page);
         // если не админ, сообщаем о невозможности выполнения команды

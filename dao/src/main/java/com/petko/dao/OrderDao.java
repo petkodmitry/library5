@@ -26,6 +26,13 @@ public class OrderDao extends BaseDao<OrdersEntity> {
         return instance;
     }
 
+    /**
+     * all Orders of a User by specific Status
+     * @param login - desired login
+     * @param orderStatus - desired status of order
+     * @return List of OrdersEntity considering given options
+     * @throws DaoException
+     */
     public List<OrdersEntity> getOrdersByLoginAndStatus(String login, OrderStatus orderStatus) throws DaoException {
         List<OrdersEntity> result;
         try {
@@ -58,6 +65,13 @@ public class OrderDao extends BaseDao<OrdersEntity> {
         return result;
     }
 
+    /**
+     * all Orders by Status less then specific Date
+     * @param orderStatus - desired status of order
+     * @param endDate - result will include entities with less then this date
+     * @return List of OrdersEntity considering given options
+     * @throws DaoException
+     */
     public List<OrdersEntity> getOrdersByStatusAndEndDate(OrderStatus orderStatus, Date endDate) throws DaoException {
         List<OrdersEntity> result;
         try {
@@ -79,6 +93,14 @@ public class OrderDao extends BaseDao<OrdersEntity> {
         return result;
     }
 
+    /**
+     * all Orders of specific Book by User and specific Statuses
+     * @param login - desired user
+     * @param bookId - ID of searched book
+     * @param orderStatuses - list of desired statuses
+     * @return List of OrdersEntity considering given options
+     * @throws DaoException
+     */
     public List<OrdersEntity> getOrdersByLoginBookIdStatuses(String login, int bookId, String[] orderStatuses) throws DaoException {
         List<OrdersEntity> result;
         try {

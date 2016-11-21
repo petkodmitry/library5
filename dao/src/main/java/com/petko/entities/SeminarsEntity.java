@@ -20,26 +20,43 @@ public class SeminarsEntity extends Entity {
     private Date seminarDate;
     private Set<UsersEntity> users = new HashSet<>();
 
+    /**
+     * @return seminarId
+     */
     @Id
     @Column(name = "sid", nullable = false, unique = true)
     public int getSeminarId() {
         return seminarId;
     }
 
+    /**
+     * Sets seminarId
+     * @param seminarId - seminarId
+     */
     public void setSeminarId(int seminarId) {
         this.seminarId = seminarId;
     }
 
+    /**
+     * @return subject
+     */
     @Basic
     @Column(name = "subject", length = 50)
     public String getSubject() {
         return subject;
     }
 
+    /**
+     * Sets subject
+     * @param subject - subject
+     */
     public void setSubject(String subject) {
         this.subject = subject;
     }
 
+    /**
+     * @return seminarDate
+     */
     @Basic
     @Temporal(TemporalType.DATE)
     @Column(name = "sdate", nullable = false)
@@ -47,10 +64,17 @@ public class SeminarsEntity extends Entity {
         return seminarDate;
     }
 
+    /**
+     * Sets seminarDate
+     * @param startdate - seminarDate
+     */
     public void setSeminarDate(Date startdate) {
         this.seminarDate = startdate;
     }
 
+    /**
+     * @return users
+     */
     @ManyToMany
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinTable(name = "users_seminars"
@@ -61,6 +85,10 @@ public class SeminarsEntity extends Entity {
         return users;
     }
 
+    /**
+     * Sets users
+     * @param users - users
+     */
     public void setUsers(Set<UsersEntity> users) {
         this.users = users;
     }

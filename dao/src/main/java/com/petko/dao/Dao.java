@@ -7,14 +7,8 @@ import java.util.List;
 
 public interface Dao<T extends Entity> {
     /**
-     * adds or updates entity in database
-     * @param entity - entity
-     */
-//    void saveOrUpdate(T entity) throws DaoException;
-
-    /**
      * adds entity in database
-     * @param entity - entity
+     * @param entity - new entity
      */
     void save(T entity) throws DaoException;
 

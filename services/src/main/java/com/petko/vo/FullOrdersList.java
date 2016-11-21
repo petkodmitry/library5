@@ -5,17 +5,16 @@ import java.util.Date;
 public class FullOrdersList {
     private int orderId;
     private String login;
-    private boolean isBlocked;  //--
+    private boolean isBlocked;
     private int bookId;
-    private String title;       //--
-    private String author;      //--
-//    private PlaceOfIssue place;
+    private String title;
+    private String author;
     private String place;
     private Date startDate;
     private Date endDate;
-    private int delayDays;      //--
+    private int delayDays;
 
-    public FullOrdersList(int orderId, String login, int bookId, /*PlaceOfIssue*/String place, Date startDate, Date endDate) {
+    public FullOrdersList(int orderId, String login, int bookId, String place, Date startDate, Date endDate) {
         this.orderId = orderId;
         this.login = login;
         this.bookId = bookId;

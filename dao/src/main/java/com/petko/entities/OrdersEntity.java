@@ -4,7 +4,6 @@ import org.hibernate.annotations.*;
 import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
-//import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -13,123 +12,132 @@ import java.util.Date;
 @Table(name = "orders")
 public class OrdersEntity extends Entity {
     private int orderId;
-//    private int userId;
     private String login;
     private int bookId;
-//    private OrderStatus status;
-//    private PlaceOfIssue placeOfIssue;
     private String status;
     private String placeOfIssue;
     private Date startDate;
     private Date endDate;
 
-    private UsersEntity user;
-
+    /**
+     * @return bookId
+     */
     @Id
     @Column(name = "oid", nullable = false, unique = true)
     public int getOrderId() {
         return orderId;
     }
 
+    /**
+     * Sets orderId
+     * @param oid - orderId
+     */
     public void setOrderId(int oid) {
         this.orderId = oid;
     }
 
+    /**
+     * @return login
+     */
     @Basic
     @Column(name = "login", nullable = false, length = 20)
     public String getLogin() {
         return login;
     }
 
+    /**
+     * Sets login
+     * @param login - login
+     */
     public void setLogin(String login) {
         this.login = login;
     }
 
+    /**
+     * @return bookId
+     */
     @Basic
     @Column(name = "bid", nullable = false)
     public int getBookId() {
         return bookId;
     }
 
+    /**
+     * Sets bookId
+     * @param bid - bookId
+     */
     public void setBookId(int bid) {
         this.bookId = bid;
     }
 
-    /*@Basic
-    @Type(type = "org.hibernate.type.StringType")
-    @Column(name = "status", nullable = false, length = 20)
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }*/
-
+    /**
+     * @return status
+     */
     @Basic
     @Column(name = "status", nullable = false, length = 20)
     public String getStatus() {
         return status;
     }
 
+    /**
+     * Sets status
+     * @param status - status
+     */
     public void setStatus(String status) {
         this.status = status;
     }
 
-    /*@Basic
-    @Type(type = "org.hibernate.type.StringType")
-    @Column(name = "placeofissue", nullable = false, length = 20)
-    public PlaceOfIssue getPlaceOfIssue() {
-        return placeOfIssue;
-    }
-
-    public void setPlaceOfIssue(PlaceOfIssue placeofissue) {
-        this.placeOfIssue = placeofissue;
-    }*/
-
+    /**
+     * @return placeOfIssue
+     */
     @Basic
     @Column(name = "placeofissue", nullable = false, length = 20)
     public String getPlaceOfIssue() {
         return placeOfIssue;
     }
 
+    /**
+     * Sets placeofissue
+     * @param placeofissue - placeofissue
+     */
     public void setPlaceOfIssue(String placeofissue) {
         this.placeOfIssue = placeofissue;
     }
 
+    /**
+     * @return startDate
+     */
     @Basic
     @Temporal(TemporalType.DATE)
-//    @Type(type = "timestamp")
     @Column(name = "startdate", nullable = false)
     public Date getStartDate() {
         return startDate;
     }
 
+    /**
+     * Sets startDate
+     * @param startdate - startDate
+     */
     public void setStartDate(Date startdate) {
         this.startDate = startdate;
     }
 
+    /**
+     * @return endDate
+     */
     @Basic
     @Temporal(TemporalType.DATE)
-//    @Type(type = "timestamp")
     @Column(name = "enddate", nullable = false)
     public Date getEndDate() {
         return endDate;
     }
 
+    /**
+     * Sets endDate
+     * @param enddate - endDate
+     */
     public void setEndDate(Date enddate) {
         this.endDate = enddate;
-    }
-
-    @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "uid2")
-    public UsersEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UsersEntity user) {
-        this.user = user;
     }
 
     @Override

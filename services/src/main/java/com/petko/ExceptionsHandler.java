@@ -8,6 +8,11 @@ import java.sql.SQLException;
 public class ExceptionsHandler {
     private ExceptionsHandler() {}
 
+    /**
+     * processes thrown exception
+     * @param request - current HTTP request
+     * @param exception to be processed
+     */
     public static void processException(HttpServletRequest request, Throwable exception) {
         String eMessage = exception.getMessage();
         if (exception instanceof DaoException) {

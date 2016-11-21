@@ -12,7 +12,7 @@ import org.hibernate.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-public class BookService implements Service<BooksEntity>{
+public class BookService {
     private static BookService instance;
     private static Logger log = Logger.getLogger(BookService.class);
     private static BookDao bookDao = BookDao.getInstance();
@@ -27,22 +27,12 @@ public class BookService implements Service<BooksEntity>{
         return instance;
     }
 
-//    public Set<BooksEntity> searchBooksByTitleOrAuthorOLD(HttpServletRequest request, String searchTextInBook) {
-//        Set<BooksEntity> result = new HashSet<>();
-//        Connection connection = null;
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-////            result.addAll(BookDaoOLD.getInstance().getFreeBooksByTitleOrAuthor(connection, searchTextInBook));
-////            result.addAll(BookDaoOLD.getInstance().getBusyBooksByTitleOrAuthor(connection, searchTextInBook));
-//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//            return Collections.emptySet();
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//        return result;
-//    }
-
+    /**
+     * searches Books by Title or Author
+     * @param request - current request
+     * @param searchTextInBook - text to be searched in Book
+     * @return List of Books according conditions
+     */
     public List<BooksEntity> searchBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook) {
         List<BooksEntity> result = new ArrayList<>();
         Session currentSession = null;
@@ -64,97 +54,11 @@ public class BookService implements Service<BooksEntity>{
         return result;
     }
 
-    /**/
-//    public List<BooksEntity> getAllBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook) {
-//        List<BooksEntity> result = new ArrayList<>();
-//        Connection connection = null;
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-////            result = BookDaoOLD.getInstance().getBooksByTitleOrAuthor(connection, searchTextInBook);
-//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//            return Collections.emptyList();
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//        return result;
-//    }
-
-    /**/
-//    public void setBookBusyOLD(HttpServletRequest request, Integer bookId, Boolean isBusy) {
-//        Connection connection = null;
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-//            BooksEntity entity = null;
-////            entity = BookDaoOLD.getInstance().getById(connection, bookId);
-//            entity.setIsBusy(isBusy);
-////            BookDaoOLD.getInstance().update(connection, entity);
-//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//    }
-
-    /**/
-//    public void setBookBusy(HttpServletRequest request, /*Integer bookId*/ BooksEntity entity, Boolean isBusy) {
-////        Session currentSession = null;
-////        Transaction transaction = null;
-//        try {
-////            currentSession = util.getSession();
-////            transaction = currentSession.beginTransaction();
-//
-////            BooksEntity entity = bookDao.getById(bookId);
-//            entity.setIsBusy(isBusy);
-//            bookDao.update(entity);
-//
-////            transaction.commit();
-////            log.info("Update book (commit)");
-//        } catch (DaoException e) {
-////            transaction.rollback();
-//            ExceptionsHandler.processException(request, e);
-//        } /*finally {
-//            util.releaseSession(currentSession);
-//        }*/
-//    }
-
-    /**/
-//    public boolean isBusy(HttpServletRequest request, Integer bookId) {
-//        boolean result = true;
-//        Session currentSession = null;
-//        Transaction transaction = null;
-//        try {
-//            currentSession = util.getSession();
-//            transaction = currentSession.beginTransaction();
-//
-//            BooksEntity entity = bookDao.getById(bookId);
-////            entity = BookDaoOLD.getInstance().getById(connection, bookId);
-//            result = entity.getIsBusy();
-//
-//            transaction.commit();
-//            log.info("Get book by ID (commit)");
-//        } catch (DaoException e) {
-//            transaction.rollback();
-//            ExceptionsHandler.processException(request, e);
-//        } finally {
-//            util.releaseSession(currentSession);
-//        }
-//        return result;
-//    }
-
-    /**/
-//    public void deleteBookOLD(HttpServletRequest request, Integer bookId) {
-//        Connection connection = null;
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-//    //            BookDaoOLD.getInstance().delete(connection, bookId);
-//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//    }
-
+    /**
+     * removes Book by book Id
+     * @param request - current request
+     * @param bookId - id of the Book to be deleted
+     */
     public void deleteBook(HttpServletRequest request, Integer bookId) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -176,19 +80,11 @@ public class BookService implements Service<BooksEntity>{
         }
     }
 
-    /**/
-//    public void addOLD(HttpServletRequest request, BooksEntity bookEntity) {
-//        Connection connection = null;
-//        try {
-//            connection = PoolManager.getInstance().getConnection();
-////            BookDaoOLD.getInstance().add(connection, bookEntity);
-//        } catch (/*DaoException |*/ SQLException | ClassNotFoundException e) {
-//            ExceptionsHandler.processException(request, e);
-//        } finally {
-//            PoolManager.getInstance().releaseConnection(connection);
-//        }
-//    }
-
+    /**
+     * adds Book to DataBase
+     * @param request - current request
+     * @param bookEntity to be added to DB
+     */
     public void add(HttpServletRequest request, BooksEntity bookEntity) {
         Session currentSession = null;
         Transaction transaction = null;
@@ -197,6 +93,7 @@ public class BookService implements Service<BooksEntity>{
             transaction = currentSession.beginTransaction();
 
             bookDao.save(bookEntity);
+
             transaction.commit();
             log.info("Save book (commit)");
         } catch (DaoException e) {
@@ -205,23 +102,5 @@ public class BookService implements Service<BooksEntity>{
         } finally {
             util.releaseSession(currentSession);
         }
-    }
-
-    public void add(BooksEntity entity) {
-    }
-
-    public List<BooksEntity> getAll() {
-        return null;
-    }
-
-    public BooksEntity getByLogin(String login) {
-        return null;
-    }
-
-    public void update(BooksEntity entity) {
-    }
-
-    public void delete(int id) {
-
     }
 }

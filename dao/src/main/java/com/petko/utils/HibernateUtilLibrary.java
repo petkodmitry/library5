@@ -13,6 +13,10 @@ public class HibernateUtilLibrary {
     private static SessionFactory sessionFactory = null;
     private static ThreadLocal<Session> sessions = new ThreadLocal<>();
 
+    /**
+     * gives HibernateUtil singleton
+     * @return HibernateUtil singleton
+     */
     public static synchronized HibernateUtilLibrary getHibernateUtil() {
         if (util == null){
             util = new HibernateUtilLibrary();
@@ -33,6 +37,10 @@ public class HibernateUtilLibrary {
         }
     }
 
+    /**
+     * gives a session from the sessionFactory
+     * @return a session from the sessionFactory
+     */
     public Session getSession() {
         Session session = sessions.get();
         if (session == null) {
@@ -42,6 +50,10 @@ public class HibernateUtilLibrary {
         return session;
     }
 
+    /**
+     * closes current session
+     * @param session - current session
+     */
     public void releaseSession(Session session) {
         if (session != null) {
             if (session.isOpen()) session.close();

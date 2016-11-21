@@ -21,59 +21,96 @@ public class UsersEntity extends Entity {
     private Boolean isAdmin;
     private Boolean isBlocked;
 
-    private Set<OrdersEntity> orders = new HashSet<>();
     private Set<SeminarsEntity> seminars = new HashSet<>();
 
+    /**
+     * @return userId
+     */
     @Id
     @Column(name = "uid", nullable = false, unique = true)
     public int getUserId() {
         return userId;
     }
 
+    /**
+     * Sets userId
+     * @param uid - userId
+     */
     public void setUserId(int uid) {
         this.userId = uid;
     }
 
+    /**
+     * @return firstName
+     */
     @Basic
     @Column(name = "fname", nullable = true, length = 15)
     public String getFirstName() {
         return firstName;
     }
 
+    /**
+     * Sets firstName
+     * @param fname - firstName
+     */
     public void setFirstName(String fname) {
         this.firstName = fname;
     }
 
+    /**
+     * @return lastName
+     */
     @Basic
     @Column(name = "lname", nullable = true, length = 20)
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     * Sets lastName
+     * @param lname - lastName
+     */
     public void setLastName(String lname) {
         this.lastName = lname;
     }
 
+    /**
+     * @return login
+     */
     @Basic
     @Column(name = "login", nullable = false, length = 20, unique = true)
     public String getLogin() {
         return login;
     }
 
+    /**
+     * Sets login
+     * @param login - login
+     */
     public void setLogin(String login) {
         this.login = login;
     }
 
+    /**
+     * @return password
+     */
     @Basic
     @Column(name = "psw", nullable = false, length = 20)
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Sets password
+     * @param psw - password
+     */
     public void setPassword(String psw) {
         this.password = psw;
     }
 
+    /**
+     * @return isAdmin
+     */
     @Basic
     @Type(type = "yes_no")
     @Column(name = "isadmin", nullable = true)
@@ -81,10 +118,17 @@ public class UsersEntity extends Entity {
         return isAdmin;
     }
 
+    /**
+     * Sets isAdmin
+     * @param isadmin - isAdmin
+     */
     public void setIsAdmin(Boolean isadmin) {
         this.isAdmin = isadmin;
     }
 
+    /**
+     * @return isBlocked
+     */
     @Basic
 //    @Type(type = "org.hibernate.type.NumericBooleanType")
     @Type(type = "yes_no")
@@ -93,19 +137,17 @@ public class UsersEntity extends Entity {
         return isBlocked;
     }
 
+    /**
+     * Sets isBlocked
+     * @param isblocked - isBlocked
+     */
     public void setIsBlocked(Boolean isblocked) {
         this.isBlocked = isblocked;
     }
 
-    @OneToMany(mappedBy = "user")
-    public Set<OrdersEntity> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(Set<OrdersEntity> orders) {
-        this.orders = orders;
-    }
-
+    /**
+     * @return seminars
+     */
     @ManyToMany
     @Cascade(CascadeType.SAVE_UPDATE)
     @JoinTable(name = "users_seminars"

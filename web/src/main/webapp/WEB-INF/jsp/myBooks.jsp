@@ -7,9 +7,6 @@
 <%@ page errorPage="error.jsp" %>
 <html>
 <head>
-    <%--<script src="js/jquery-3.1.1.js"></script>--%>
-    <%--<script src="js/prolongOrder.js"></script>--%>
-
     <title>Мои книги</title>
 </head>
 <body><H3>Список книг у меня на руках</H3>
@@ -38,7 +35,6 @@
                     <td>
                         <c:if test="${order.getPlace().toString().equals('Абонемент')}">
                             <a href="controller?cmd=prolongOrder&orderId=${order.getOrderId()}">Продлить</a>
-                            <%--<a href="javascript:prolongOrder(${order.getOrderId()})">Продлить</a>--%>
                         </c:if>
                     </td>
                 </tr>

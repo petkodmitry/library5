@@ -2,7 +2,6 @@ package com.petko.dao;
 
 import com.petko.DaoException;
 import com.petko.entities.Entity;
-import com.petko.entities.UsersEntity;
 import com.petko.utils.HibernateUtilLibrary;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -18,19 +17,11 @@ public class BaseDao<T extends Entity> implements Dao<T> {
     protected static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
     protected static Session session;
 
-    /*@Override
-    public void saveOrUpdate(T entity) throws DaoException {
-        try {
-            log.info("saveOrUpdate(): " + entity);
-            session = util.getSession();
-            session.saveOrUpdate(entity);
-        } catch (HibernateException e) {
-            String message = "Error save or update " + entity + " in Dao.";
-            log.error(message + e);
-            throw new DaoException(message);
-        }
-    }*/
-
+    /**
+     * adds entity in database
+     * @param entity - new entity
+     * @throws DaoException
+     */
     @Override
     public void save(T entity) throws DaoException {
         try {
@@ -44,6 +35,11 @@ public class BaseDao<T extends Entity> implements Dao<T> {
         }
     }
 
+    /**
+     * updates entity in database
+     * @param entity - entity
+     * @throws DaoException
+     */
     @Override
     public void update(T entity) throws DaoException {
         try {
@@ -57,6 +53,13 @@ public class BaseDao<T extends Entity> implements Dao<T> {
         }
     }
 
+    /**
+     *
+     * @param first - the first record for a page
+     * @param max - max count of elements for pagination
+     * @return  List of Entities considering given options
+     * @throws DaoException
+     */
     @Override
     public List<T> getAll(int first, int max) throws DaoException {
         List<T> result;
@@ -76,6 +79,11 @@ public class BaseDao<T extends Entity> implements Dao<T> {
         return result;
     }
 
+    /**
+     * gives a list of all elements in the DB
+     * @return List of all elements
+     * @throws DaoException
+     */
     public Long getTotal() throws DaoException{
         Long result;
         try {
@@ -93,6 +101,12 @@ public class BaseDao<T extends Entity> implements Dao<T> {
         return result;
     }
 
+    /**
+     * gives Entity by id
+     * @param id - id of looking Entity
+     * @return Entity by id
+     * @throws DaoException
+     */
     @Override
     public T getById(int id) throws DaoException {
         log.info("Get ENTITY by id: " + id);
@@ -109,6 +123,11 @@ public class BaseDao<T extends Entity> implements Dao<T> {
         return entity;
     }
 
+    /**
+     * deletes Entity
+     * @param entity - Entity to be deleted
+     * @throws DaoException
+     */
     @Override
     public void delete(T entity) throws DaoException {
         try {
@@ -122,6 +141,10 @@ public class BaseDao<T extends Entity> implements Dao<T> {
         }
     }
 
+    /**
+     * defines correct class which extends Entity class
+     * @return exactly used persistant class
+     */
     private Class getPersistentClass() {
         return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }

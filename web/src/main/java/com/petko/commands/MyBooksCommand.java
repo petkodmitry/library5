@@ -4,7 +4,7 @@ import com.petko.ResourceManager;
 import com.petko.constants.Constants;
 import com.petko.entities.OrderStatus;
 import com.petko.services.OrderService;
-import com.petko.vo.OrderForMyOrdersList;
+import com.petko.vo.FullOrdersList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ public class MyBooksCommand extends AbstractCommand{
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         String page = ResourceManager.getInstance().getProperty(Constants.PAGE_MY_BOOKS);
-        List<OrderForMyOrdersList> myBooksList;
+        List<FullOrdersList> myBooksList;
         myBooksList = service.getOrdersByLoginAndStatus(request, login, OrderStatus.ON_HAND);
         session.setAttribute("myBooksList", myBooksList);
 

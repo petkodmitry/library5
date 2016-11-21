@@ -22,7 +22,6 @@
                 <td>Автор</td>
                 <td>Место выдачи</td>
                 <td>Дата заказа</td>
-                <%--<td>Дата возврата</td>--%>
                 <td>Выдача читателю</td>
                 <td>Закрыть заказ</td>
             </tr>
@@ -34,7 +33,6 @@
                 <td>${order.getAuthor()}</td>
                 <td>${order.getPlace().toString()}</td>
                 <td>${order.getStartDate()}</td>
-                <%--<td>${order.getEndDate()}</td>--%>
                 <td>
                     <a href="controller?cmd=provideBook&orderId=${order.getOrderId()}">Выдать</a>
                 </td>
