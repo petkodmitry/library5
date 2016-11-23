@@ -1,6 +1,7 @@
 package com.petko.dao;
 
 import com.petko.DaoException;
+import com.petko.entities.BooksEntity;
 import com.petko.entities.OrderStatus;
 import com.petko.entities.OrdersEntity;
 import org.apache.log4j.Logger;
@@ -57,7 +58,7 @@ public class OrderDao extends BaseDao<OrdersEntity> {
             result = query.list();
 
             log.info("getOrdersByLoginAndStatus in OrderDao");
-        } catch (HibernateException e) {
+        } catch (HibernateException | NullPointerException e) {
             String message = "Error getOrdersByLoginAndStatus in OrderDao";
             log.error(message + e);
             throw new DaoException(message);
@@ -85,7 +86,7 @@ public class OrderDao extends BaseDao<OrdersEntity> {
             result = query.list();
 
             log.info("getOrdersByStatusAndEndDate in OrderDao");
-        } catch (HibernateException e) {
+        } catch (HibernateException | NullPointerException e) {
             String message = "Error getOrdersByStatusAndEndDate in OrderDao";
             log.error(message + e);
             throw new DaoException(message);
@@ -96,25 +97,29 @@ public class OrderDao extends BaseDao<OrdersEntity> {
     /**
      * all Orders of specific Book by User and specific Statuses
      * @param login - desired user
-     * @param bookId - ID of searched book
+     * @param bookEntity - we need to search all the exemplars of this bookEntity (by title and author)
      * @param orderStatuses - list of desired statuses
      * @return List of OrdersEntity considering given options
      * @throws DaoException
      */
-    public List<OrdersEntity> getOrdersByLoginBookIdStatuses(String login, int bookId, String[] orderStatuses) throws DaoException {
+    public List<OrdersEntity> getOrdersByLoginBookIdStatuses(String login, BooksEntity bookEntity, String[] orderStatuses) throws DaoException {
         List<OrdersEntity> result;
         try {
             session = util.getSession();
 
-            String hql = "SELECT O FROM OrdersEntity O WHERE O.login=:loginParam AND O.bookId=:bookIdParam AND O.status IN :statusParam";
+            String title = bookEntity.getTitle();
+            String author = bookEntity.getAuthor();
+            String hql = "SELECT O FROM OrdersEntity O WHERE O.login=:loginParam AND O.status IN :statusParam" +
+                    " AND O.bookId IN (SELECT B.bookId FROM BooksEntity B WHERE B.title=:titleParam AND B.author=:authorParam)";
             Query query = session.createQuery(hql);
             query.setParameter("loginParam", login);
-            query.setParameter("bookIdParam", bookId);
             query.setParameterList("statusParam", orderStatuses);
+            query.setParameter("titleParam", title);
+            query.setParameter("authorParam", author);
             result = query.list();
 
             log.info("getOrdersByLoginBookIdStatuses in OrderDao");
-        } catch (HibernateException e) {
+        } catch (HibernateException | NullPointerException e) {
             String message = "Error getOrdersByLoginBookIdStatuses in OrderDao";
             log.error(message + e);
             throw new DaoException(message);

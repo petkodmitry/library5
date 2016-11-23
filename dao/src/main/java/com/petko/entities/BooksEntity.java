@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.persistence.Table;
 
 @javax.persistence.Entity
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "books")
 public class BooksEntity extends Entity {
     private int bookId;

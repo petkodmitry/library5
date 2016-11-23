@@ -210,7 +210,9 @@ public class SeminarService {
             if (entity != null) {
                 entity.getUsers().clear();
                 seminarDao.delete(entity);
-            } else request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Не удалось удалить выбранный семинар");
+            } else {
+                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Не удалось удалить выбранный семинар");
+            }
 
             transaction.commit();
             log.info("Get seminar by id (commit)");

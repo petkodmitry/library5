@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @javax.persistence.Entity
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "orders")
 public class OrdersEntity extends Entity {
     private int orderId;

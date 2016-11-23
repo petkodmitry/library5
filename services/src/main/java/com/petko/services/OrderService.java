@@ -26,22 +26,21 @@ public class OrderService {
     private static UserDao userDao = UserDao.getInstance();
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
 
-    private OrderService() {}
+    private OrderService() {
+    }
 
     public static synchronized OrderService getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new OrderService();
         }
         return instance;
     }
 
-    /**
-     * getting orders list by login and order status
-     * @param request - current http request
-     * @param login - user, whose orders are taken
+    /*** getting orders list by login and order status
+     * @param request     - current http request
+     * @param login       - user, whose orders are taken
      * @param orderStatus - with which status orders are taken
-     * @return the List of orders according to the conditions
-     */
+     * @return the List of orders according to the conditions */
     public List<FullOrdersList> getOrdersByLoginAndStatus(HttpServletRequest request, String login, OrderStatus orderStatus) {
         List<FullOrdersList> result = new ArrayList<>();
         Session currentSession = null;
@@ -51,7 +50,6 @@ public class OrderService {
             transaction = currentSession.beginTransaction();
             // getting required List of orders, but without Book details (book ID only)
             List<OrdersEntity> orderEntityList = orderDao.getOrdersByLoginAndStatus(login, orderStatus);
-
             if (!orderEntityList.isEmpty()) {
                 // getting IDs of all books in received List
                 Set<Integer> bookIds = orderEntityList.stream().map(OrdersEntity::getBookId).collect(Collectors.toSet());
@@ -63,7 +61,6 @@ public class OrderService {
                 result = buildFullOrdersList(orderEntityList, booksMap, null, null);
                 log.info("Get all books by couple ids (commit)");
             }
-
             transaction.commit();
             log.info("Get orders by login and status (commit)");
         } catch (DaoException e) {
@@ -76,11 +73,9 @@ public class OrderService {
         return result;
     }
 
-    /**
-     * getting expired orders list by endDate
+    /*** getting expired orders list by endDate
      * @param request - current http request
-     * @return the List of orders according to the conditions
-     */
+     * @return the List of orders according to the conditions */
     public List<FullOrdersList> getExpiredOrders(HttpServletRequest request) {
         List<FullOrdersList> result = new ArrayList<>();
         OrderStatus orderStatus = OrderStatus.ON_HAND;
@@ -89,11 +84,9 @@ public class OrderService {
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
-
             Date today = new Date();
             Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
             List<OrdersEntity> listByStatus = orderDao.getOrdersByStatusAndEndDate(orderStatus, currentDate);
-
             if (!listByStatus.isEmpty()) {
                 // getting IDs of all books in received List
                 Set<Integer> bookIds = listByStatus.stream().map(OrdersEntity::getBookId).collect(Collectors.toSet());
@@ -112,7 +105,6 @@ public class OrderService {
                 log.info("Get all books by couple ids (commit)");
                 log.info("Get all users by couple logins (commit)");
             }
-
             transaction.commit();
             log.info("Get orders by status and endDate (commit)");
         } catch (DaoException e) {
@@ -125,22 +117,18 @@ public class OrderService {
         return result;
     }
 
-    /**
-     * sets Order status to CLOSED
+    /*** sets Order status to CLOSED
      * @param request - current http request
-     * @param login - the method checks if (User by login) closes his order, not of other Users
-     * @param orderID - ID of the order to be closed
-     */
+     * @param login   - the method checks if (User by login) closes his order, not of other Users
+     * @param orderID - ID of the order to be closed */
     public void closeOrder(HttpServletRequest request, String login, int orderID) {
         Session currentSession = null;
         Transaction transaction = null;
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
-
             OrdersEntity entity = orderDao.getById(orderID);
             log.info("Get order by id (commit)");
-
             // if User brought book to the Library, we mark Book as free
             if (login == null && OrderStatus.ON_HAND.toString().equals(entity.getStatus())) {
                 BooksEntity book = bookDao.getById(entity.getBookId());
@@ -156,7 +144,6 @@ public class OrderService {
                 orderDao.update(entity);
                 log.info("update order (commit)");
             }
-
             transaction.commit();
         } catch (DaoException e) {
             transaction.rollback();
@@ -166,41 +153,58 @@ public class OrderService {
         }
     }
 
-    /**
-     * sets Order status to ORDERED
-     * @param request - current http request
-     * @param login - action for User by login exactly
-     * @param bookID - ID of the Book to be ordered
-     * @param isToHome - is order to home (true) or to reeding room (false)
-     */
-    public void orderToHomeOrToRoom(HttpServletRequest request, String login, int bookID, boolean isToHome) {
+    /*** sets Order status to ORDERED
+     * @param request  - current http request
+     * @param login    - action for User by login exactly
+     * @param bookID   - ID of the Book to be ordered
+     * @param isToHome - is order to home (true) or to reeding room (false) */
+    public void orderToHomeOrToRoom(HttpServletRequest request, String login, int bookID, Boolean isToHome) {
         Session currentSession = null;
         Transaction transaction = null;
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
-
+            UsersEntity userEntity = userDao.getByLogin(login);
+            BooksEntity bookEntity = bookDao.getById(bookID);
             String[] statuses = {OrderStatus.ON_HAND.toString(), OrderStatus.ORDERED.toString()};
-            List<OrdersEntity> ordersList = orderDao.getOrdersByLoginBookIdStatuses(login, bookID, statuses);
-            OrdersEntity newEntity = null;
-            if (ordersList.isEmpty()) {
-                long delay = 0L;
-                PlaceOfIssue place = PlaceOfIssue.READING_ROOM;
-                if (isToHome) {
-                    delay = 30L * 24L * 60L * 60L * 1_000L;
-                    place = PlaceOfIssue.HOME;
-                }
-                Date startDate = new Date(Calendar.getInstance().getTime().getTime());
-                Date endDate = new Date(startDate.getTime() + delay);
-                newEntity = createNewEntity(login, bookID, OrderStatus.ORDERED.toString(), place.toString(),
-                        startDate, endDate);
-                currentSession.save(newEntity);
-                log.info("save order (commit)");
+            OrdersEntity newEntity;
+            // if User is in BlackList, he can't order any book
+            if (userEntity == null || userEntity.getIsBlocked()) {
+                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Вы не можете заказывать книги, находясь в 'Чёрном списке'.");
             } else {
-                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Заказ на эту книгу имеется и активен");
+                // if asked Book is busy - find another exemplar
+                if (bookEntity != null && bookEntity.getIsBusy()) {
+                    bookEntity = getIdOfVacantBookByTitleAndAuthor(bookEntity.getTitle(), bookEntity.getAuthor());
+                    if (bookEntity != null) bookID = bookEntity.getBookId();
+                }
+                // if all the exemplars are busy - tell User about it
+                if (bookEntity == null || bookEntity.getIsBusy()) {
+                    request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Все экземпляры данной книги выданы.");
+                    // if the User already have this Book (or another exemplar) in his active orders (Ordered or OnHand) - tell him about it
+                } else if (!orderDao.getOrdersByLoginBookIdStatuses(login, bookEntity, statuses).isEmpty()) {
+                    request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Ваш заказ на эту книгу имеется и активен");
+                    /*** otherwise (if at least one exemplar is vacant,
+                     * if the User is not blocked,
+                     * if the User hasn't ordered this Book yet)
+                     * create a new Order! */
+                } else {
+                    long delay = 0L;
+                    PlaceOfIssue place = PlaceOfIssue.READING_ROOM;
+                    if (isToHome) {
+                        delay = 30L * 24L * 60L * 60L * 1_000L;
+                        place = PlaceOfIssue.HOME;
+                    }
+                    Date startDate = new Date(Calendar.getInstance().getTime().getTime());
+                    Date endDate = new Date(startDate.getTime() + delay);
+                    newEntity = createNewEntity(login, bookID, OrderStatus.ORDERED.toString(), place.toString(),
+                            startDate, endDate);
+                    currentSession.save(newEntity);
+                    log.info("save order (commit)");
+                }
             }
-
             transaction.commit();
+            log.info("Get user by Login (commit)");
+            log.info("Get book by ID (commit)");
             log.info("Get orders by login, bookId and statuses (commit)");
         } catch (DaoException e) {
             transaction.rollback();
@@ -210,32 +214,42 @@ public class OrderService {
         }
     }
 
-    /**
-     * sets new endDate of the Order, if the Order is not expired and current endDate not later then 'interval' days from today
+    /*** searches vacant Book with required title and author
+     * @param title  of searched exemplars
+     * @param author of searched exemplars
+     * @return null or vacant Book with required title and author
+     * @throws DaoException */
+    private BooksEntity getIdOfVacantBookByTitleAndAuthor(String title, String author) throws DaoException {
+        BooksEntity result = null;
+        List<BooksEntity> list = bookDao.getBooksByTitleAndAuthorAndStatus(title, author, false);
+        for (BooksEntity entity : list) {
+            if (!entity.getIsBusy()) {
+                result = entity;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /*** sets new endDate of the Order, if the Order is not expired and current endDate not later then 'interval' days from today
      * @param request - current http request
-     * @param login - action for User by login exactly
-     * @param orderID - ID of the Order to be prolonged
-     */
+     * @param login   - action for User by login exactly
+     * @param orderID - ID of the Order to be prolonged */
     public void prolongOrder(HttpServletRequest request, String login, int orderID) {
         Session currentSession = null;
         Transaction transaction = null;
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
-
             OrdersEntity entity = orderDao.getById(orderID);
-            if (entity.getLogin().equals(login) && OrderStatus.ON_HAND.toString().equals(entity.getStatus())) {
-                /**
-                 * time interval from now till the end date of the order. In case not to allow a user indefinitely prolong his order
-                 */
+            if (entity != null && entity.getLogin().equals(login) && OrderStatus.ON_HAND.toString().equals(entity.getStatus())) {
+                // time interval from now till the end date of the order. In case not to allow a user indefinitely prolong his order
                 int interval = 5;
                 long gap = 30L * 24L * 60L * 60L * 1_000L;
                 long delay = interval * 24L * 60L * 60L * 1_000L;
                 Date endDate = entity.getEndDate();
-
                 Date today = new Date();
                 Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
-
                 long difference = endDate.getTime() - currentDate.getTime();
                 if (difference >= 0 && (difference - delay) <= interval) {
                     entity.setEndDate(new Date(endDate.getTime() + gap));
@@ -246,7 +260,6 @@ public class OrderService {
                             "и время до его окончания не должно превышать " + interval + " дней");
                 }
             }
-
             transaction.commit();
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
@@ -257,48 +270,55 @@ public class OrderService {
         }
     }
 
-    /**
-     * sets the Order status to ON_HAND, Book status to busy
+    /*** sets the Order status to ON_HAND, Book status to busy
      * @param request - current http request
-     * @param orderID - ID of Order to be provided
-     */
+     * @param orderID - ID of Order to be provided */
     public void provideBook(HttpServletRequest request, int orderID) {
         Session currentSession = null;
         Transaction transaction = null;
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
-
             OrdersEntity entity = orderDao.getById(orderID);
             BooksEntity bookEntity = null;
             if (entity != null) bookEntity = bookDao.getById(entity.getBookId());
-            if (entity == null || bookEntity.getIsBusy()) {
-                String message;
-                if (entity == null) message = "Не удалось обратиться к книге";
-                else message = "Эта книга уже выдана!";
-                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, message);
+            if (bookEntity == null) {
+                request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Не удалось обратиться к книге");
             } else {
-                if (entity.getStatus().equals(OrderStatus.ORDERED.toString())) {
-                    long delay = 0L;
-                    if (PlaceOfIssue.HOME.toString().equals(entity.getPlaceOfIssue())) {
-                        delay = 30L * 24L * 60L * 60L * 1_000L;
+                // if Book is busy, search another exemplar
+                if (bookEntity.getIsBusy()) {
+                    BooksEntity freeBook = getIdOfVacantBookByTitleAndAuthor(bookEntity.getTitle(), bookEntity.getAuthor());
+                    if (freeBook != null) {
+                        // change Book in the Order
+                        bookEntity = freeBook;
+                        entity.setBookId(bookEntity.getBookId());
+                    } else {
+                        request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Эта книга уже выдана!");
                     }
-                    Date today = new Date();
-                    Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
-                    Date newEndDate = new Date(currentDate.getTime() + delay);
-
-                    entity.setStatus(OrderStatus.ON_HAND.toString());
-                    entity.setEndDate(newEndDate);
-                    orderDao.update(entity);
-                    log.info("Update order (commit)");
-                    bookEntity.setIsBusy(true);
-                    bookDao.update(bookEntity);
-                    log.info("Update book (commit)");
-                } else {
-                    request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Проверьте статус заказа!");
+                }
+                // if another exemplar was found
+                if (!bookEntity.getIsBusy()) {
+                    // if status of The Order wasn't changed and is ORDERED ("Открыт")
+                    if (entity.getStatus().equals(OrderStatus.ORDERED.toString())) {
+                        long delay = 0L;
+                        if (PlaceOfIssue.HOME.toString().equals(entity.getPlaceOfIssue())) {
+                            delay = 30L * 24L * 60L * 60L * 1_000L;
+                        }
+                        Date today = new Date();
+                        Date currentDate = new Date(today.getYear(), today.getMonth(), today.getDate());
+                        Date newEndDate = new Date(currentDate.getTime() + delay);
+                        entity.setStatus(OrderStatus.ON_HAND.toString());
+                        entity.setEndDate(newEndDate);
+                        orderDao.update(entity);
+                        log.info("Update order (commit)");
+                        bookEntity.setIsBusy(true);
+                        bookDao.update(bookEntity);
+                        log.info("Update book (commit)");
+                    } else {
+                        request.setAttribute(Constants.ERROR_MESSAGE_ATTRIBUTE, "Проверьте статус заказа!");
+                    }
                 }
             }
-
             transaction.commit();
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
@@ -309,12 +329,6 @@ public class OrderService {
         }
     }
 
-    /**
-     * gives Order by ID
-     * @param request - current http request
-     * @param orderID - ID of order to be searched
-     * @return Order by ID
-     */
     public OrdersEntity getById(HttpServletRequest request, int orderID) {
         OrdersEntity answer = null;
         Session currentSession = null;
@@ -322,9 +336,7 @@ public class OrderService {
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
-
             answer = orderDao.getById(orderID);
-
             transaction.commit();
             log.info("Get order by id (commit)");
         } catch (DaoException e) {
@@ -336,16 +348,6 @@ public class OrderService {
         return answer;
     }
 
-    /**
-     * creates and gives a new OrderEntity
-     * @param login - login
-     * @param bookId - bookId
-     * @param status - status
-     * @param place - place
-     * @param startDate - startDate
-     * @param endDate - endDate
-     * @return a new OrderEntity
-     */
     public OrdersEntity createNewEntity(String login, int bookId, String status, String place, Date startDate, Date endDate) {
         OrdersEntity result = new OrdersEntity();
         result.setLogin(login);

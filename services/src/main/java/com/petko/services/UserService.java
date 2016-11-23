@@ -122,7 +122,7 @@ public class UserService {
      * @param page to be shown in WEB
      * @return List of all Users
      */
-    public List<UsersEntity> getAll(HttpServletRequest request, String page/*, int max*/) {
+    public List<UsersEntity> getAll(HttpServletRequest request, String page) {
         List<UsersEntity> result = new ArrayList<>();
         Session currentSession = null;
         Transaction transaction = null;
@@ -170,7 +170,7 @@ public class UserService {
             UsersEntity userEntity = userDao.getByLogin(login);
             String entityLogin = null;
             if (userEntity != null) entityLogin = userEntity.getLogin();
-            if (login.equals(entityLogin)) result = true;
+            if (login != null && login.equals(entityLogin)) result = true;
 
             transaction.commit();
             log.info("Get user by login (commit)");
@@ -190,7 +190,7 @@ public class UserService {
      * @return true or false
      */
     public boolean isAllPasswordRulesFollowed(String password, String repeatPassword) {
-        return password.equals(repeatPassword) && password.length() >= 8;
+        return password != null && password.equals(repeatPassword) && password.length() >= 8;
     }
 
     /**
@@ -281,11 +281,12 @@ public class UserService {
      * @return true or false
      */
     public boolean isAllRegisterDataEntered (UsersEntity regData, String repeatPassword) {
-        return !"".equals(regData.getFirstName()) &&
-                !"".equals(regData.getLastName()) &&
-                !"".equals(regData.getLogin()) &&
-                !"".equals(regData.getPassword()) &&
-                !"".equals(repeatPassword);
+        return regData != null &&
+                regData.getFirstName() != null && !"".equals(regData.getFirstName()) &&
+                regData.getLastName() != null && !"".equals(regData.getLastName()) &&
+                regData.getLogin() != null && !"".equals(regData.getLogin()) &&
+                regData.getPassword() != null && !"".equals(regData.getPassword()) &&
+                repeatPassword != null && !"".equals(repeatPassword);
     }
 
     /**

@@ -85,17 +85,40 @@ public class BookDao extends BaseDao<BooksEntity> {
     }
 
     /**
-     *
-     * @param title - title of the Book
-     * @param author - author of the Book
-     * @param isBusy - status
-     * @return a new BooksEntity
+     * gets List of Book by required Title&Author&Status
+     * @param title of the Book
+     * @param author of the Book
+     * @param isBusy - status of the Book
+     * @return List of Book by required Title&Author&Status
+     * @throws DaoException
      */
-    public BooksEntity createNewEntity(String title, String author, boolean isBusy) {
-        BooksEntity result = new BooksEntity();
-        result.setTitle(title);
-        result.setAuthor(author);
-        result.setIsBusy(isBusy);
+    public List<BooksEntity> getBooksByTitleAndAuthorAndStatus(String title, String author, Boolean isBusy) throws DaoException {
+        List<BooksEntity> result;
+        try {
+            session = util.getSession();
+
+            Query query;
+            if (isBusy != null) {
+                String hql = "SELECT B FROM BooksEntity B WHERE (B.title = :titleParam AND B.author = :authorParam) AND B.isBusy = :statusParam";
+                query = session.createQuery(hql);
+                query.setParameter("titleParam", title);
+                query.setParameter("authorParam", author);
+                query.setParameter("statusParam", isBusy);
+            } else {
+                String hql = "SELECT B FROM BooksEntity B WHERE (B.title = :titleParam AND B.author = :authorParam)";
+                query = session.createQuery(hql);
+                query.setParameter("titleParam", title);
+                query.setParameter("authorParam", author);
+            }
+
+            result = query.list();
+
+            log.info("getBooksByTitleAndAuthorAndStatus in BookDao");
+        } catch (HibernateException e) {
+            String message = "Error getBooksByTitleAndAuthorAndStatus in OrderDao";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
         return result;
     }
 }

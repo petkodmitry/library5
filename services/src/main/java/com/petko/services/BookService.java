@@ -14,6 +14,7 @@ import java.util.*;
 
 public class BookService {
     private static BookService instance;
+    private static UserService userService = UserService.getInstance();
     private static Logger log = Logger.getLogger(BookService.class);
     private static BookDao bookDao = BookDao.getInstance();
     private static HibernateUtilLibrary util = HibernateUtilLibrary.getHibernateUtil();
@@ -33,8 +34,9 @@ public class BookService {
      * @param searchTextInBook - text to be searched in Book
      * @return List of Books according conditions
      */
-    public List<BooksEntity> searchBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook) {
+    public List<BooksEntity> searchBooksByTitleOrAuthor(HttpServletRequest request, String searchTextInBook, String login) {
         List<BooksEntity> result = new ArrayList<>();
+        boolean isUserAdmin = userService.isAdminUser(request, login);
         Session currentSession = null;
         Transaction transaction = null;
         try {
@@ -42,15 +44,40 @@ public class BookService {
             transaction = currentSession.beginTransaction();
 
             result = bookDao.getBooksByTitleOrAuthorAndStatus(searchTextInBook, null);
+            // if User is not Admin, show him only one exemplar
+            if (!isUserAdmin) result = showBooksByOneExemplar(result);
+
             transaction.commit();
             log.info("Search books by (login or title) and status (commit)");
-        } catch (DaoException e) {
+        } catch (DaoException | NullPointerException e) {
             transaction.rollback();
             ExceptionsHandler.processException(request, e);
             return Collections.emptyList();
         } finally {
             util.releaseSession(currentSession);
         }
+        return result;
+    }
+
+    private List<BooksEntity> showBooksByOneExemplar(List<BooksEntity> booksEntityList) {
+        List<BooksEntity> result = new ArrayList<>();
+        Map<Map<String, String>, BooksEntity> tempResult = new HashMap<>();
+
+        for (BooksEntity book : booksEntityList) {
+            Map<String, String> conditions = new HashMap<>();
+            conditions.put(book.getTitle(), book.getAuthor());
+            if (!tempResult.containsKey(conditions)) {
+                tempResult.put(conditions, book);
+            } else {
+                BooksEntity existedBook = tempResult.get(conditions);
+                // if exemplar in temp Map is busy and this exemplar is NOT busy - replace
+                if (existedBook.getIsBusy() && !book.getIsBusy()) {
+                    tempResult.put(conditions, book);
+                }
+            }
+        }
+        result.addAll(tempResult.values());
+
         return result;
     }
 

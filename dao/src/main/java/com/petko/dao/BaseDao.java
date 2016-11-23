@@ -28,7 +28,7 @@ public class BaseDao<T extends Entity> implements Dao<T> {
             log.info("save(): " + entity);
             session = util.getSession();
             session.save(entity);
-        } catch (HibernateException e) {
+        } catch (HibernateException | IllegalArgumentException e) {
             String message = "Error save " + entity + " in Dao.";
             log.error(message + e);
             throw new DaoException(message);
@@ -46,7 +46,7 @@ public class BaseDao<T extends Entity> implements Dao<T> {
             log.info("update(): " + entity);
             session = util.getSession();
             session.update(entity);
-        } catch (HibernateException e) {
+        } catch (HibernateException | IllegalArgumentException e) {
             String message = "Error update " + entity + " in Dao.";
             log.error(message + e);
             throw new DaoException(message);
@@ -73,6 +73,22 @@ public class BaseDao<T extends Entity> implements Dao<T> {
             log.info("getAll " + getPersistentClass().getName() + ". Count=" + result.size());
         } catch (HibernateException e) {
             String message = "Error getAll " + getPersistentClass().getName() + " in BaseDao";
+            log.error(message + e);
+            throw new DaoException(message);
+        }
+        return result;
+    }
+
+
+    public List<T> getAbsolutelyAll() throws DaoException {
+        List<T> result;
+        try {
+            session = util.getSession();
+            Query query = session.createQuery("FROM " + getPersistentClass().getSimpleName());
+            result = query.list();
+            log.info("getAll " + getPersistentClass().getName());
+        } catch (HibernateException e) {
+            String message = "Error getAll " + getPersistentClass().getName();
             log.error(message + e);
             throw new DaoException(message);
         }
@@ -115,7 +131,7 @@ public class BaseDao<T extends Entity> implements Dao<T> {
             session = util.getSession();
             entity = (T) session.get(getPersistentClass(), id);
             log.info("get() clazz: " + entity);
-        } catch (HibernateException e) {
+        } catch (HibernateException | ClassCastException e) {
             String message = "Error get() " + getPersistentClass() + " in BaseDao.";
             log.error(message + e);
             throw new DaoException(message);

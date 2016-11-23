@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @javax.persistence.Entity
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "seminars")
 public class SeminarsEntity extends Entity {
     private int seminarId;

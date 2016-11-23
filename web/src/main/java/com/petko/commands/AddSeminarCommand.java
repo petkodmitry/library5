@@ -5,14 +5,12 @@ import com.petko.constants.Constants;
 import com.petko.entities.SeminarsEntity;
 import com.petko.services.SeminarService;
 import com.petko.services.UserService;
-import com.sun.org.apache.bcel.internal.generic.NOP;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 public class AddSeminarCommand extends AbstractCommand {
@@ -53,9 +51,7 @@ public class AddSeminarCommand extends AbstractCommand {
                     regData.setSubject(subject);
                     regData.setSeminarDate(date);
                     service.add(request, regData);
-//                    if (regData.getSeminarId() != 0) {
                     request.setAttribute("info", "Семинар добавлен в базу");
-//                    }
                     session.removeAttribute("regData");
                 } else {
                     setErrorMessage(request, "Поля данных семинара не должны быть пустыми и дата должна быть >= сегодня");
