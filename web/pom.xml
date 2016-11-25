@@ -26,35 +26,6 @@
     <build>
         <finalName>library5</finalName>
         <plugins>
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <outputDirectory>${parent}</outputDirectory>
-                </configuration>
-            </plugin>-->
-
-            <!--<plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <url>http://localhost:8080/manager/text</url>
-                    <username>admin</username>
-                    <password>admin</password>
-                    <path>${project.build.finalName}</path>
-                    <finalName>${project.build.finalName}.war</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>redeploy</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                </executions>
-            </plugin>-->
         </plugins>
     </build>
 </project>

@@ -11,6 +11,7 @@
 </head>
 <body><H3>Поиск книги для заказа</H3>
 <HR>
+<BR>Введите часть названия книги или имени автора
 <form method="post" action="controller">
     <INPUT type="hidden" name="cmd" value="searchbook">
     <table>

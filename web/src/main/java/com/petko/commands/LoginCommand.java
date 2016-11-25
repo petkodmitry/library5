@@ -31,10 +31,6 @@ public class LoginCommand extends AbstractCommand {
 
         String login = request.getParameter("login");
         String password = request.getParameter("password");
-        /*if (login == null || password == null) {
-            redirectToLoginPage(request);
-            return;
-        }*/
         if (session.getAttribute("user") != null) {
             login = (String) session.getAttribute("user");
             redirectToMainPage(request, login);

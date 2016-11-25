@@ -122,12 +122,12 @@ public class UserService {
      * @param page to be shown in WEB
      * @return List of all Users
      */
-    public List<UsersEntity> getAll(HttpServletRequest request, String page) {
+    public List<UsersEntity> getAll(HttpServletRequest request, String page, int max) {
         List<UsersEntity> result = new ArrayList<>();
         Session currentSession = null;
         Transaction transaction = null;
         HttpSession httpSession = request.getSession();
-        int max = 2;
+//        int max = 2;
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
@@ -136,11 +136,11 @@ public class UserService {
                 Long total = userDao.getTotal();
                 log.info("getTotal users (commit)");
                 httpSession.setAttribute("total", total);
-                httpSession.setAttribute("max", max);
                 firstInt = 0;
             } else {
                 firstInt = (Integer.parseInt(page) - 1) * max;
             }
+            if (httpSession != null) httpSession.setAttribute("max", max);
             result = userDao.getAll(firstInt, max);
             transaction.commit();
             log.info("getAll users (commit)");

@@ -10,6 +10,43 @@
 <BODY><H3>Таблица: пользователи</H3>
 <HR>
 <H4>Всего пользователей: ${total}</H4>
+
+<c:choose>
+    <c:when test="${param.get('page') == null}">
+        <c:set var="page" value="1"/>
+        ${requestScope.putIfAbsent("page", "1")}
+    </c:when>
+    <c:otherwise>
+        <c:set var="page" value="${param.get('page')}"/>
+    </c:otherwise>
+</c:choose>
+
+
+
+<form method="post" action="controller?cmd=showUsers<%--&page=${page}--%>">
+<%--<form method="post" action="controller?cmd=showUsers&page=${requestScope.get('page')}">--%>
+    <table>
+        <tr>
+            <td>количество элементов на странице:</td>
+            <td>
+                <select title="perPageSelection" name="perPage" <%--onchange=
+                        "${sessionScope.putIfAbsent("oldPerPage", perPage); requestScope.putIfAbsent("page", 2)}"--%>>
+                    <option value="2" ${perPage == 2 ? 'selected="selected"' : ''}>2</option>
+                    <option value="5" ${perPage == 5 ? 'selected="selected"' : ''}>5</option>
+                    <option value="10" ${perPage == 10 ? 'selected="selected"' : ''}>10</option>
+                    <option value="20" ${perPage == 20 ? 'selected="selected"' : ''}>20</option>
+                    <option value="50" ${perPage == 50 ? 'selected="selected"' : ''}>50</option>
+                    <option value="100" ${perPage == 100 ? 'selected="selected"' : ''}>100</option>
+                </select>
+            </td>
+            <td>
+                <INPUT type="submit" title="OK" value="OK" <%--onclick=
+                        "${sessionScope.putIfAbsent("oldPerPage", perPage); requestScope.putIfAbsent("page", 2)}"--%>>
+            </td>
+        </tr>
+    </table>
+</form>
+
 <table border="1" frame="void">
     <tbody>
     <tr>
@@ -47,45 +84,47 @@
     </c:otherwise>
 </c:choose>
 
-<c:choose>
+<%--<c:choose>
     <c:when test="${param.get('page') == null}">
         <c:set var="page" value="1"/>
     </c:when>
     <c:otherwise>
         <c:set var="page" value="${param.get('page')}"/>
     </c:otherwise>
-</c:choose>
+</c:choose>--%>
 
-<c:forEach begin="${1}" end="${endPage}" var="page1">
-    <c:choose>
-        <c:when test="${(endPage <= 10) || ((page1 == 1) || (page1 == endPage)
+<c:if test="${endPage != 1}">
+    <c:forEach begin="${1}" end="${endPage}" var="page1">
+        <c:choose>
+            <c:when test="${(endPage <= 10) || ((page1 == 1) || (page1 == endPage)
             || ((page + 3) > page1 && (page - 3) < page1))}">
-            <c:if test="${page1 < 10}">
-                <c:set var="page2" value="${'0'.concat(page1)}"/>
-            </c:if>
-            <c:if test="${page1 > 9}">
-                <c:set var="page2" value="${page1}"/>
-            </c:if>
-            <c:choose>
-                <c:when test="${page == page1}">
-                    &nbsp;&nbsp;&nbsp;&nbsp;${page2}
-                </c:when>
-                <c:otherwise>
-                    &nbsp;&nbsp;&nbsp;<a href="controller?cmd=showUsers&page=${page1}"> ${page2} </a>
-                </c:otherwise>
-            </c:choose>
-        </c:when>
-        <c:otherwise>
-            <c:choose>
-                <c:when test="${(page1 == 2 && (page - 3) > 1) || ((page1 == endPage - 1) && (page + 3) < endPage)}">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
-                </c:when>
-                <c:otherwise>
-                </c:otherwise>
-            </c:choose>
-        </c:otherwise>
-    </c:choose>
-</c:forEach>
+                <c:if test="${page1 < 10}">
+                    <c:set var="page2" value="${'0'.concat(page1)}"/>
+                </c:if>
+                <c:if test="${page1 > 9}">
+                    <c:set var="page2" value="${page1}"/>
+                </c:if>
+                <c:choose>
+                    <c:when test="${page == page1}">
+                        &nbsp;&nbsp;&nbsp;&nbsp;${page2}
+                    </c:when>
+                    <c:otherwise>
+                        &nbsp;&nbsp;&nbsp;<a href="controller?cmd=showUsers&page=${page1}"> ${page2} </a>
+                    </c:otherwise>
+                </c:choose>
+            </c:when>
+            <c:otherwise>
+                <c:choose>
+                    <c:when test="${(page1 == 2 && (page - 3) > 1) || ((page1 == endPage - 1) && (page + 3) < endPage)}">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+                    </c:when>
+                    <c:otherwise>
+                    </c:otherwise>
+                </c:choose>
+            </c:otherwise>
+        </c:choose>
+    </c:forEach>
+</c:if>
 
 <HR>
 <BR><a href="controller?cmd=login">На главную</a><BR>

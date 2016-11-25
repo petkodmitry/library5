@@ -384,11 +384,13 @@ public class OrderService {
             String login = entity.getLogin();
             FullOrdersList orderView = new FullOrdersList(entity.getOrderId(), entity.getLogin(), entity.getBookId(),
                     entity.getPlaceOfIssue(), entity.getStartDate(), entity.getEndDate());
-            orderView.setTitle(book.getTitle());
-            orderView.setAuthor(book.getAuthor());
+            if (book != null) {
+                orderView.setTitle(book.getTitle());
+                orderView.setAuthor(book.getAuthor());
+            }
             if (usersMap != null) {
                 UsersEntity user = usersMap.get(login);
-                orderView.setBlocked(user.getIsBlocked());
+                if (user != null) orderView.setBlocked(user.getIsBlocked());
             }
             if (currentDate != null) {
                 long oneDay = 24L * 60L * 60L * 1_000L;

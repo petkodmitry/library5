@@ -36,8 +36,12 @@
     </table>
     <br>
 </FORM>
+<BR><a href="controller?cmd=searchBookAdmin">Назад</a>
 <BR><a href="controller?cmd=login">На главную</a><BR>
 <HR>
+<c:if test="${requestScope['info'] != null}">
+    ${info}<BR>
+</c:if>
 <c:if test="${requestScope['errorMessage'] != null}">
     Ошибка: ${errorMessage}
 </c:if>

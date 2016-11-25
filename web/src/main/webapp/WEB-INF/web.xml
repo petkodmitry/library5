@@ -18,6 +18,10 @@
         <url-pattern>/controller</url-pattern>
     </servlet-mapping>
 
+    <!--<listener>
+        <listener-class>com.petko.MyServletRequestListener</listener-class>
+    </listener>-->
+
     <filter>
         <filter-name>EncodingFilter</filter-name>
         <filter-class>com.petko.EncodingFilter</filter-class>

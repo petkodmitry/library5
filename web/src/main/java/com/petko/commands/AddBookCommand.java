@@ -36,15 +36,15 @@ public class AddBookCommand extends AbstractCommand {
             } else {
                 String title = request.getParameter("newTitle");
                 String author = request.getParameter("newAuthor");
-                if (!"".equals(title) && !"".equals(author)) {
-                    regData.setTitle(title);
-                    regData.setAuthor(author);
+                regData.setTitle(title);
+                regData.setAuthor(author);
+                if (title != null && author != null && !"".equals(title) && !"".equals(author)) {
                     regData.setIsBusy(false);
                     service.add(request, regData);
                     request.setAttribute("info", "Книга добавлена в базу библиотеки");
-                    session.removeAttribute("regData");
-                    page = ResourceManager.getInstance().getProperty(Constants.PAGE_SEARCH_BOOK_ADMIN);
-                } else {
+                    regData.setTitle("");
+                    regData.setAuthor("");
+                } else if (title != null && author != null) {
                     setErrorMessage(request, "Поля данных книги не должны быть пустыми");
                 }
             }

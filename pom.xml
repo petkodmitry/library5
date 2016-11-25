@@ -122,22 +122,19 @@
         <module>web</module>
     </modules>
 
-    <!--<distributionManagement>
-        <repository>
-            <id>library5</id>
-            <name>Library5 application</name>
-            <url>file://${env.CATALINA_HOME}webapps/library5/</url>
-        </repository>
-    </distributionManagement>-->
-
     <build>
         <finalName>library5</finalName>
-        <plugins>
 
-            <!--<plugin>
+        <plugins>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.0.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -151,74 +148,17 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-            </plugin>-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.0</version>
             </plugin>
-
-            <!--23 ноября-->
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <outputDirectory>${env.CATALINA_HOME}\webapps</outputDirectory>
-                </configuration>
-            </plugin>-->
-
-            <!--23 ноября-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <!--<outputDirectory>${parent}</outputDirectory>-->
-                    <!--<outputDirectory>c:/Program Files/Tomcat 8.5/TEST</outputDirectory>-->
                     <outputDirectory>${env.CATALINA_HOME}\webapps</outputDirectory>
                 </configuration>
             </plugin>
-
-            <!--<plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <url>http://localhost:8080/manager/text</url>
-                    <username>admin</username>
-                    <password>admin</password>
-                    &lt;!&ndash;<path>${project.build.finalName}</path>&ndash;&gt;
-                    <path>c:/Program Files/Tomcat 8.5/webapps</path>
-                    &lt;!&ndash;<finalName>target/${project.build.finalName}.war</finalName>&ndash;&gt;
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>redeploy</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                </executions>
-            </plugin>-->
-
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <file>${project.build.directory}\${project.artifactId}.war</file>
-                    <url>${project.distributionManagement.repository.url}</url>
-                    <repositoryId>${project.distributionManagement.repository.id}</repositoryId>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>${project.artifactId}</artifactId>
-                    <version>${project.version}</version>
-                    <packaging>war</packaging>
-                    <pomFile>pom.xml</pomFile>
-                </configuration>
-            </plugin>-->
         </plugins>
     </build>
 </project>

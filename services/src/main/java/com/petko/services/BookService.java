@@ -86,14 +86,15 @@ public class BookService {
      * @param request - current request
      * @param bookId - id of the Book to be deleted
      */
-    public void deleteBook(HttpServletRequest request, Integer bookId) {
+    public BooksEntity /*void*/ deleteBook(HttpServletRequest request, Integer bookId) {
+        BooksEntity book;
         Session currentSession = null;
         Transaction transaction = null;
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
 
-            BooksEntity book = bookDao.getById(bookId);
+            /*BooksEntity */book = bookDao.getById(bookId);
             if (book != null) {
                 bookDao.delete(book);
                 transaction.commit();
@@ -102,9 +103,11 @@ public class BookService {
         } catch (DaoException e) {
             transaction.rollback();
             ExceptionsHandler.processException(request, e);
+            return null;
         } finally {
             util.releaseSession(currentSession);
         }
+        return book;
     }
 
     /**

@@ -23,12 +23,32 @@ public class ShowUsersCommand extends AbstractCommand {
     }
 
     public void execute(HttpServletRequest request, HttpServletResponse response) {
+        UserService service = UserService.getInstance();
         HttpSession session = request.getSession();
         String login = (String) session.getAttribute("user");
         String webPage = request.getParameter("page");
+        String perPage = request.getParameter("perPage");
+        Integer perPageSession = (Integer) session.getAttribute("perPage");
+        Integer oldPerPageSession = (Integer) session.getAttribute("oldPerPage");
         // если админ, то выполняем команду
-        if (UserService.getInstance().isAdminUser(request, login)) {
-            List<UsersEntity> userSet = UserService.getInstance().getAll(request, webPage/*, max*/);
+        if (service.isAdminUser(request, login)) {
+
+            int max;
+            if (perPage != null) max = Integer.parseInt(perPage);
+            else if (perPageSession != null) max = perPageSession;
+            else max = 5;
+
+            session.setAttribute("perPage", max);
+
+            /*if (oldPerPageSession != null && !oldPerPageSession.equals(max)) {
+                int tempPage = Integer.parseInt(webPage);
+                tempPage = tempPage * oldPerPageSession / max;
+                webPage = Integer.toString(tempPage);
+                session.setAttribute("oldPerPage", max);
+                session.setAttribute("page", webPage);
+            }*/
+
+            List<UsersEntity> userSet = service.getAll(request, webPage, max);
             if (userSet.isEmpty()) setErrorMessage(request, "Не удалось получить список пользователей");
             request.setAttribute(Constants.USER_SET, userSet);
             String page = ResourceManager.getInstance().getProperty(Constants.PAGE_SHOW_USERS);

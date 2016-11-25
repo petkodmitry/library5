@@ -7,12 +7,14 @@
 <%@ page errorPage="error.jsp" %>
 <html>
 <head>
+    <%--<script type="text/javascript" src="js/jquery-3.1.1.js"></script>--%>
+    <%--<script type="text/javascript" src="js/deleteBook.js"></script>--%>
     <title>Управление книгами</title>
 </head>
 <body><H3>Управление книгами администратором</H3>
 <HR>
 <BR><a href="controller?cmd=addBook">Добавить книгу в базу</a><BR><BR>
-<BR>Поиск книг
+<BR>Поиск книг (по автору или названию)
 <form method="post" action="controller">
     <INPUT type="hidden" name="cmd" value="searchBookAdmin">
     <table>
@@ -32,35 +34,38 @@
 
 <BR>
 
-<c:if test="${searchBookAdmin != null && !searchBookAdmin.isEmpty()}">
-    <form>
-        <table border="1">
-            <tr>
-                <td>ID книги</td>
-                <td>Наименование</td>
-                <td>Автор</td>
-                <td>Свободна/На руках</td>
-                <td>Удалить из базы</td>
-            </tr>
-            <c:forEach items="${searchBookAdmin}" var="book">
+<div id="refresh">
+    <c:if test="${searchBookAdmin != null && !searchBookAdmin.isEmpty()}">
+        <form>
+            <table border="1">
                 <tr>
-                    <td>${book.getBookId()}</td>
-                    <td>${book.getTitle()}</td>
-                    <td>${book.getAuthor()}</td>
-                    <td>
-                        <c:if test="${book.getIsBusy() == false}">Available</c:if>
-                        <c:if test="${book.getIsBusy() == true}">On Hand</c:if>
-                    </td>
-                    <td>
-                        <c:if test="${book.getIsBusy() == false}">
-                            <a href="controller?cmd=deleteBook&bookId=${book.getBookId()}">Удалить</a>
-                        </c:if>
-                    </td>
+                    <td>ID книги</td>
+                    <td>Наименование</td>
+                    <td>Автор</td>
+                    <td>Свободна/На руках</td>
+                    <td>Удалить из базы</td>
                 </tr>
-            </c:forEach>
-        </table>
-    </form>
-</c:if>
+                <c:forEach items="${searchBookAdmin}" var="book">
+                    <tr>
+                        <td>${book.getBookId()}</td>
+                        <td>${book.getTitle()}</td>
+                        <td>${book.getAuthor()}</td>
+                        <td>
+                            <c:if test="${book.getIsBusy() == false}">Available</c:if>
+                            <c:if test="${book.getIsBusy() == true}">On Hand</c:if>
+                        </td>
+                        <td>
+                            <c:if test="${book.getIsBusy() == false}">
+                                <a href="controller?cmd=deleteBook&bookId=${book.getBookId()}">Удалить</a>
+                                <%--<a href="#" onclick="deleteBook(${book.getBookId()})">Удалить</a>--%>
+                            </c:if>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </form>
+    </c:if>
+</div>
 
 <a href="controller?cmd=login">На главную</a>
 <BR><BR><c:if test="${requestScope['errorMessage'] != null}">
