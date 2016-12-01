@@ -27,18 +27,18 @@ public class UserServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void testGetAll1() {
-        userService.getAll(null, null, 0);
+        userService.getAll(null/*, null, 0*/);
     }
 
     @Test
     public void testGetAll2() {
-        List<UsersEntity> list = userService.getAll(request, "1", 1);
+        List<UsersEntity> list = userService.getAll(request/*, "1", 1*/);
         Assert.assertTrue(!list.isEmpty());
     }
 
     @Test (expected = NullPointerException.class)
     public void testGetAll3() {
-        userService.getAll(request, null, -1_000);
+        userService.getAll(request/*, null, -1_000*/);
     }
 
     @Test (expected = NullPointerException.class)

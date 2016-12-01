@@ -119,15 +119,24 @@ public class UserService {
     /**
      * gives List of all Users
      * @param request - current http request
-     * @param page to be shown in WEB
      * @return List of all Users
      */
-    public List<UsersEntity> getAll(HttpServletRequest request, String page, int max) {
+    public List<UsersEntity> getAll(HttpServletRequest request) {
         List<UsersEntity> result = new ArrayList<>();
         Session currentSession = null;
         Transaction transaction = null;
         HttpSession httpSession = request.getSession();
-//        int max = 2;
+
+        String page = request.getParameter("page");
+        String perPageString = request.getParameter("perPage");
+        Integer newPerPage = perPageString != null ? Integer.parseInt(perPageString) : null;
+        Integer oldPerPage = (Integer) httpSession.getAttribute("max");
+        Integer newMax;
+        if (newPerPage != null) {
+            newMax = newPerPage;
+        }
+        else newMax = oldPerPage != null ? oldPerPage : 5;
+
         try {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
@@ -138,10 +147,11 @@ public class UserService {
                 httpSession.setAttribute("total", total);
                 firstInt = 0;
             } else {
-                firstInt = (Integer.parseInt(page) - 1) * max;
+                Integer pageInt = getPageDueToNewPerPage(request, httpSession, page, newPerPage, oldPerPage);
+                firstInt = (pageInt - 1) * newMax;
             }
-            if (httpSession != null) httpSession.setAttribute("max", max);
-            result = userDao.getAll(firstInt, max);
+            result = userDao.getAll(firstInt, newMax);
+            httpSession.setAttribute("max", newMax);
             transaction.commit();
             log.info("getAll users (commit)");
         } catch (DaoException e) {
@@ -150,6 +160,54 @@ public class UserService {
         }  finally {
             util.releaseSession(currentSession);
         }
+        return result;
+    }
+
+    /**
+     *
+     * @param request
+     * @param session
+     * @param pageStr
+     * @param newPerPage
+     * @param oldPerPage
+     * @return
+     */
+    private Integer getPageDueToNewPerPage(HttpServletRequest request, HttpSession session, String pageStr,
+                                           Integer newPerPage, Integer oldPerPage) {
+        Integer result;
+        Integer page = Integer.parseInt(pageStr);
+        Long total = (Long) session.getAttribute("total");
+        if ((newPerPage == null || oldPerPage == null) || (newPerPage.equals(oldPerPage))) {
+            result = page;
+        } else if (newPerPage > oldPerPage) {
+            result = changeAndGiveCurrentPage(page, total, newPerPage, oldPerPage, true);
+        } else {
+            result = changeAndGiveCurrentPage(page, total, newPerPage, oldPerPage, false);
+        }
+        request.setAttribute("page", result);
+        return result;
+    }
+
+    /**
+     *
+     * @param page
+     * @param total
+     * @param newPerPage
+     * @param oldPerPage
+     * @param isMoreRecords
+     * @return
+     */
+    private Integer changeAndGiveCurrentPage(Integer page, Long total, Integer newPerPage,
+                                             Integer oldPerPage, boolean isMoreRecords) {
+        Integer result;
+        int temp = page * oldPerPage / newPerPage;
+        int rest = page * oldPerPage % newPerPage;
+        if (isMoreRecords) {
+            result = rest != 0 ? temp + 1 : temp;
+        } else result = rest != 0 ? temp - 1 : temp;
+        rest =  (int)(total % newPerPage);
+        Integer endPage = (int)(rest != 0 ? (total - rest) / newPerPage + 1 : total / newPerPage);
+        if (endPage < result) result = endPage;
         return result;
     }
 

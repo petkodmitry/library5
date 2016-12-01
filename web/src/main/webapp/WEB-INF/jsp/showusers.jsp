@@ -12,36 +12,31 @@
 <H4>Всего пользователей: ${total}</H4>
 
 <c:choose>
-    <c:when test="${param.get('page') == null}">
+    <c:when test="${requestScope.get('page') == null}">
         <c:set var="page" value="1"/>
         ${requestScope.putIfAbsent("page", "1")}
     </c:when>
     <c:otherwise>
-        <c:set var="page" value="${param.get('page')}"/>
+        <c:set var="page" value="${requestScope.get('page')}"/>
     </c:otherwise>
 </c:choose>
 
-
-
-<form method="post" action="controller?cmd=showUsers<%--&page=${page}--%>">
-<%--<form method="post" action="controller?cmd=showUsers&page=${requestScope.get('page')}">--%>
+<form method="post" action="controller?cmd=showUsers&page=${page}">
     <table>
         <tr>
             <td>количество элементов на странице:</td>
             <td>
-                <select title="perPageSelection" name="perPage" <%--onchange=
-                        "${sessionScope.putIfAbsent("oldPerPage", perPage); requestScope.putIfAbsent("page", 2)}"--%>>
-                    <option value="2" ${perPage == 2 ? 'selected="selected"' : ''}>2</option>
-                    <option value="5" ${perPage == 5 ? 'selected="selected"' : ''}>5</option>
-                    <option value="10" ${perPage == 10 ? 'selected="selected"' : ''}>10</option>
-                    <option value="20" ${perPage == 20 ? 'selected="selected"' : ''}>20</option>
-                    <option value="50" ${perPage == 50 ? 'selected="selected"' : ''}>50</option>
-                    <option value="100" ${perPage == 100 ? 'selected="selected"' : ''}>100</option>
+                <select title="perPageSelection" name="perPage">
+                    <option value="2" ${max == 2 ? 'selected="selected"' : ''}>2</option>
+                    <option value="5" ${max == 5 ? 'selected="selected"' : ''}>5</option>
+                    <option value="10" ${max == 10 ? 'selected="selected"' : ''}>10</option>
+                    <option value="20" ${max == 20 ? 'selected="selected"' : ''}>20</option>
+                    <option value="50" ${max == 50 ? 'selected="selected"' : ''}>50</option>
+                    <option value="100" ${max == 100 ? 'selected="selected"' : ''}>100</option>
                 </select>
             </td>
             <td>
-                <INPUT type="submit" title="OK" value="OK" <%--onclick=
-                        "${sessionScope.putIfAbsent("oldPerPage", perPage); requestScope.putIfAbsent("page", 2)}"--%>>
+                <INPUT type="submit" title="OK" value="OK">
             </td>
         </tr>
     </table>
@@ -83,15 +78,6 @@
         <c:set var="endPage" value="${((total - aMod) / max) + 1}"/>
     </c:otherwise>
 </c:choose>
-
-<%--<c:choose>
-    <c:when test="${param.get('page') == null}">
-        <c:set var="page" value="1"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="page" value="${param.get('page')}"/>
-    </c:otherwise>
-</c:choose>--%>
 
 <c:if test="${endPage != 1}">
     <c:forEach begin="${1}" end="${endPage}" var="page1">
