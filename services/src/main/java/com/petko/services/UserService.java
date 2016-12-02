@@ -128,6 +128,12 @@ public class UserService {
         HttpSession httpSession = request.getSession();
 
         String page = request.getParameter("page");
+
+        String sortBy = request.getParameter("sortBy");
+        if (sortBy == null) sortBy = (String) httpSession.getAttribute("sortBy");
+        String orderType = request.getParameter("orderType");
+        if (orderType == null) orderType = (String) httpSession.getAttribute("orderType");
+
         String perPageString = request.getParameter("perPage");
         Integer newPerPage = perPageString != null ? Integer.parseInt(perPageString) : null;
         Integer oldPerPage = (Integer) httpSession.getAttribute("max");
@@ -147,10 +153,20 @@ public class UserService {
                 httpSession.setAttribute("total", total);
                 firstInt = 0;
             } else {
-                Integer pageInt = getPageDueToNewPerPage(request, httpSession, page, newPerPage, oldPerPage);
-                firstInt = (pageInt - 1) * newMax;
+                Integer pageInt = Integer.parseInt(page);
+                Integer newPageInt = getPageDueToNewPerPage(request, httpSession, pageInt, newPerPage, oldPerPage);
+                // if perPage is changed, flush sorting
+                /*if (!newPageInt.equals(pageInt)) {
+                    sortBy = null;
+                    orderType = null;
+                }*/
+                if (sortBy != null && orderType != null) {
+                    httpSession.setAttribute("sortBy", sortBy);
+                    httpSession.setAttribute("orderType", orderType);
+                }
+                firstInt = (newPageInt - 1) * newMax;
             }
-            result = userDao.getAll(firstInt, newMax);
+            result = userDao.getAll(firstInt, newMax, sortBy, orderType);
             httpSession.setAttribute("max", newMax);
             transaction.commit();
             log.info("getAll users (commit)");
@@ -167,15 +183,15 @@ public class UserService {
      *
      * @param request
      * @param session
-     * @param pageStr
+     * @param page
      * @param newPerPage
      * @param oldPerPage
      * @return
      */
-    private Integer getPageDueToNewPerPage(HttpServletRequest request, HttpSession session, String pageStr,
+    private Integer getPageDueToNewPerPage(HttpServletRequest request, HttpSession session, Integer page,
                                            Integer newPerPage, Integer oldPerPage) {
         Integer result;
-        Integer page = Integer.parseInt(pageStr);
+//        Integer page = Integer.parseInt(pageStr);
         Long total = (Long) session.getAttribute("total");
         if ((newPerPage == null || oldPerPage == null) || (newPerPage.equals(oldPerPage))) {
             result = page;

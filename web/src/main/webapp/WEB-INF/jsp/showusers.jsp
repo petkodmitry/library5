@@ -45,13 +45,41 @@
 <table border="1" frame="void">
     <tbody>
     <tr>
-        <td>ID</td>
-        <td>Имя</td>
-        <td>Фамилия</td>
-        <td>Логин</td>
-        <td>Пароль</td>
-        <td>Является админом</td>
-        <td>Заблокирован</td>
+        <td><a href="controller?cmd=showUsers&page=1&sortBy=userId&orderType=${"userId".equals(sortBy) ?
+                    ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">ID</a>
+            <c:if test="${'asc'.equals(orderType) && 'userId'.equals(sortBy)}">↓</c:if>
+            <c:if test="${'desc'.equals(orderType) && 'userId'.equals(sortBy)}">↑</c:if>
+        </td>
+        <td><a href="controller?cmd=showUsers&page=1&sortBy=firstName&orderType=${"firstName".equals(sortBy) ?
+                    ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Имя</a>
+            <c:if test="${'asc'.equals(orderType) && 'firstName'.equals(sortBy)}">↓</c:if>
+            <c:if test="${'desc'.equals(orderType) && 'firstName'.equals(sortBy)}">↑</c:if>
+        </td>
+        <td><a href="controller?cmd=showUsers&page=1&sortBy=lastName&orderType=${"lastName".equals(sortBy) ?
+                    ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Фамилия</a>
+            <c:if test="${'asc'.equals(orderType) && 'lastName'.equals(sortBy)}">↓</c:if>
+            <c:if test="${'desc'.equals(orderType) && 'lastName'.equals(sortBy)}">↑</c:if>
+        </td>
+        <td><a href="controller?cmd=showUsers&page=1&sortBy=login&orderType=${"login".equals(sortBy) ?
+                    ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Логин</a>
+            <c:if test="${'asc'.equals(orderType) && 'login'.equals(sortBy)}">↓</c:if>
+            <c:if test="${'desc'.equals(orderType) && 'login'.equals(sortBy)}">↑</c:if>
+        </td>
+        <td><a href="controller?cmd=showUsers&page=1&sortBy=password&orderType=${"password".equals(sortBy) ?
+                    ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Пароль</a>
+            <c:if test="${'asc'.equals(orderType) && 'password'.equals(sortBy)}">↓</c:if>
+            <c:if test="${'desc'.equals(orderType) && 'password'.equals(sortBy)}">↑</c:if>
+        </td>
+        <td><a href="controller?cmd=showUsers&page=1&sortBy=isAdmin&orderType=${"isAdmin".equals(sortBy) ?
+                    ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Является админом</a>
+            <c:if test="${'asc'.equals(orderType) && 'isAdmin'.equals(sortBy)}">↓</c:if>
+            <c:if test="${'desc'.equals(orderType) && 'isAdmin'.equals(sortBy)}">↑</c:if>
+        </td>
+        <td><a href="controller?cmd=showUsers&page=1&sortBy=isBlocked&orderType=${"isBlocked".equals(sortBy) ?
+                    ("asc".equals(orderType) ? "desc" : "asc") : "asc"}">Заблокирован</a>
+            <c:if test="${'asc'.equals(orderType) && 'isBlocked'.equals(sortBy)}">↓</c:if>
+            <c:if test="${'desc'.equals(orderType) && 'isBlocked'.equals(sortBy)}">↑</c:if>
+        </td>
     </tr>
     <c:forEach items="${userSet}" var="user">
         <tr>

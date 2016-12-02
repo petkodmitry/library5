@@ -50,7 +50,7 @@ public class UserDaoTest {
 
     @Test
     public void testGetAll1() throws DaoException {
-        List<UsersEntity> list = userDao.getAll(-100, 0);
+        List<UsersEntity> list = userDao.getAll(-100, 0, "userId", "desc");
         Assert.assertTrue(!list.isEmpty());
     }
 

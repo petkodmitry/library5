@@ -8,6 +8,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -61,12 +62,18 @@ public class BaseDao<T extends Entity> implements Dao<T> {
      * @throws DaoException
      */
     @Override
-    public List<T> getAll(int first, int max) throws DaoException {
+    public List<T> getAll(int first, int max, String sortBy, String orderType) throws DaoException {
         List<T> result;
         try {
             session = util.getSession();
             Criteria criteria = session.createCriteria(getPersistentClass());
             criteria.setCacheable(true);
+
+            if (sortBy != null && orderType != null) {
+                criteria = orderType.equals("asc") ? criteria.addOrder(Order.asc(sortBy).ignoreCase())
+                        : criteria.addOrder(Order.desc(sortBy).ignoreCase());
+            }
+
             criteria.setFirstResult(first);
             criteria.setMaxResults(max);
             result = criteria.list();

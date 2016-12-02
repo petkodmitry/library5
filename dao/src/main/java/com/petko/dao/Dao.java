@@ -22,7 +22,7 @@ public interface Dao<T extends Entity> {
      * gives a list of all elements in the DB
      * @return List of all elements
      */
-    List<T> getAll(int first, int max) throws DaoException;
+    List<T> getAll(int first, int max, String sortBy, String orderType) throws DaoException;
 
     /**
      * gives Entity by id
