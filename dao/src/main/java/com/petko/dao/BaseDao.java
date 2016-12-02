@@ -8,10 +8,15 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaQuery;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Map;
 
 public class BaseDao<T extends Entity> implements Dao<T> {
     private static Logger log = Logger.getLogger(BaseDao.class);
@@ -62,7 +67,7 @@ public class BaseDao<T extends Entity> implements Dao<T> {
      * @throws DaoException
      */
     @Override
-    public List<T> getAll(int first, int max, String sortBy, String orderType) throws DaoException {
+    public List<T> getAll(int first, int max, String sortBy, String orderType, Map<String, String> filters) throws DaoException {
         List<T> result;
         try {
             session = util.getSession();
@@ -72,6 +77,26 @@ public class BaseDao<T extends Entity> implements Dao<T> {
             if (sortBy != null && orderType != null) {
                 criteria = orderType.equals("asc") ? criteria.addOrder(Order.asc(sortBy).ignoreCase())
                         : criteria.addOrder(Order.desc(sortBy).ignoreCase());
+            }
+            for (String filter : filters.keySet()) {
+                switch (filter) {
+                    case "userId":
+                        criteria.add(Restrictions.sqlRestriction(" uid LIKE '%" + filters.get(filter) + "%' "));
+                        break;
+                    case "isAdmin":
+                    case "isBlocked":
+                        String filterValue = filters.get(filter);
+                        if ("true".contains(filterValue.toLowerCase())) criteria.add(Restrictions.eq(filter, true));
+                        else if ("false".contains(filterValue.toLowerCase())) criteria.add(Restrictions.eq(filter, false));
+                        else {
+                            criteria.add(Restrictions.ne(filter, true));
+                            criteria.add(Restrictions.ne(filter, false));
+                        }
+                        break;
+                    default:
+                        criteria.add(Restrictions.ilike(filter, "%" + filters.get(filter) + "%"));
+                        break;
+                }
             }
 
             criteria.setFirstResult(first);

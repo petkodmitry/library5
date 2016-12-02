@@ -4,6 +4,7 @@ import com.petko.DaoException;
 import com.petko.entities.Entity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Dao<T extends Entity> {
     /**
@@ -22,7 +23,7 @@ public interface Dao<T extends Entity> {
      * gives a list of all elements in the DB
      * @return List of all elements
      */
-    List<T> getAll(int first, int max, String sortBy, String orderType) throws DaoException;
+    List<T> getAll(int first, int max, String sortBy, String orderType, Map<String, String> filters) throws DaoException;
 
     /**
      * gives Entity by id

@@ -126,14 +126,30 @@ public class UserService {
         Session currentSession = null;
         Transaction transaction = null;
         HttpSession httpSession = request.getSession();
-
         String page = request.getParameter("page");
 
+        // for sorting
         String sortBy = request.getParameter("sortBy");
         if (sortBy == null) sortBy = (String) httpSession.getAttribute("sortBy");
         String orderType = request.getParameter("orderType");
         if (orderType == null) orderType = (String) httpSession.getAttribute("orderType");
 
+        // for filtering
+        Map<String, String> filters = (Map<String, String>) httpSession.getAttribute("filters");
+        if (filters == null) filters = new HashMap<>();
+        Map<String, String[]> parMap = request.getParameterMap();
+        for (String parameter : parMap.keySet()) {
+            if (parameter.endsWith("Filter")) {
+                String paramToPut = parameter.substring(0, parameter.indexOf("Filter"));
+                String paramValue = parMap.get(parameter)[0];
+                if (!"".equals(paramValue)) filters.put(paramToPut, paramValue);
+            }
+        }
+        String filterRemove = request.getParameter("filterRemove");
+        if (filterRemove != null) filters.remove(filterRemove);
+        httpSession.setAttribute("filters", filters);
+
+        // go ahead
         String perPageString = request.getParameter("perPage");
         Integer newPerPage = perPageString != null ? Integer.parseInt(perPageString) : null;
         Integer oldPerPage = (Integer) httpSession.getAttribute("max");
@@ -155,18 +171,14 @@ public class UserService {
             } else {
                 Integer pageInt = Integer.parseInt(page);
                 Integer newPageInt = getPageDueToNewPerPage(request, httpSession, pageInt, newPerPage, oldPerPage);
-                // if perPage is changed, flush sorting
-                /*if (!newPageInt.equals(pageInt)) {
-                    sortBy = null;
-                    orderType = null;
-                }*/
                 if (sortBy != null && orderType != null) {
                     httpSession.setAttribute("sortBy", sortBy);
                     httpSession.setAttribute("orderType", orderType);
                 }
                 firstInt = (newPageInt - 1) * newMax;
             }
-            result = userDao.getAll(firstInt, newMax, sortBy, orderType);
+            httpSession.setAttribute("totalToShow", userDao.getAll(0,  ((Long) httpSession.getAttribute("total")).intValue(), sortBy, orderType, filters).size());
+            result = userDao.getAll(firstInt, newMax, sortBy, orderType, filters);
             httpSession.setAttribute("max", newMax);
             transaction.commit();
             log.info("getAll users (commit)");
@@ -180,40 +192,39 @@ public class UserService {
     }
 
     /**
-     *
-     * @param request
-     * @param session
-     * @param page
-     * @param newPerPage
-     * @param oldPerPage
-     * @return
+     * Re-estimates current page due to perPage parameter changes
+     * @param request - current httpRequest
+     * @param session - current httpSession
+     * @param page - current page (not re-estimated)
+     * @param newPerPage - a new perPage parameter
+     * @param oldPerPage - perPage parameter which is saved in httpSession
+     * @return the correct page due to perPage changes
      */
     private Integer getPageDueToNewPerPage(HttpServletRequest request, HttpSession session, Integer page,
                                            Integer newPerPage, Integer oldPerPage) {
         Integer result;
-//        Integer page = Integer.parseInt(pageStr);
-        Long total = (Long) session.getAttribute("total");
+        Integer totalToShow = (Integer) session.getAttribute("totalToShow");
         if ((newPerPage == null || oldPerPage == null) || (newPerPage.equals(oldPerPage))) {
             result = page;
         } else if (newPerPage > oldPerPage) {
-            result = changeAndGiveCurrentPage(page, total, newPerPage, oldPerPage, true);
+            result = changeAndGiveCurrentPage(page, totalToShow, newPerPage, oldPerPage, true);
         } else {
-            result = changeAndGiveCurrentPage(page, total, newPerPage, oldPerPage, false);
+            result = changeAndGiveCurrentPage(page, totalToShow, newPerPage, oldPerPage, false);
         }
         request.setAttribute("page", result);
         return result;
     }
 
     /**
-     *
-     * @param page
-     * @param total
-     * @param newPerPage
-     * @param oldPerPage
-     * @param isMoreRecords
-     * @return
+     * Re-estimates current page due to perPage parameter changes
+     * @param page - current page (not re-estimated)
+     * @param totalToShow - the whole amount of records (including filters)
+     * @param newPerPage - a new perPage parameter
+     * @param oldPerPage - perPage parameter which is saved in httpSession
+     * @param isMoreRecords - is new perPage bigger than current
+     * @return the correct page due to perPage changes
      */
-    private Integer changeAndGiveCurrentPage(Integer page, Long total, Integer newPerPage,
+    private Integer changeAndGiveCurrentPage(Integer page, Integer totalToShow, Integer newPerPage,
                                              Integer oldPerPage, boolean isMoreRecords) {
         Integer result;
         int temp = page * oldPerPage / newPerPage;
@@ -221,8 +232,8 @@ public class UserService {
         if (isMoreRecords) {
             result = rest != 0 ? temp + 1 : temp;
         } else result = rest != 0 ? temp - 1 : temp;
-        rest =  (int)(total % newPerPage);
-        Integer endPage = (int)(rest != 0 ? (total - rest) / newPerPage + 1 : total / newPerPage);
+        rest =  totalToShow % newPerPage;
+        Integer endPage = rest != 0 ? (totalToShow - rest) / newPerPage + 1 : totalToShow / newPerPage;
         if (endPage < result) result = endPage;
         return result;
     }
