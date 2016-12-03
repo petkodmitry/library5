@@ -367,11 +367,45 @@ public class UserService {
      */
     public boolean isAllRegisterDataEntered (UsersEntity regData, String repeatPassword) {
         return regData != null &&
-                regData.getFirstName() != null && !"".equals(regData.getFirstName()) &&
-                regData.getLastName() != null && !"".equals(regData.getLastName()) &&
-                regData.getLogin() != null && !"".equals(regData.getLogin()) &&
-                regData.getPassword() != null && !"".equals(regData.getPassword()) &&
-                repeatPassword != null && !"".equals(repeatPassword);
+                regData.getFirstName() != null &&
+                !"".equals(regData.getFirstName()) &&
+                regData.getLastName() != null &&
+                !"".equals(regData.getLastName()) &&
+                regData.getLogin() != null &&
+                !"".equals(regData.getLogin()) &&
+                regData.getPassword() != null &&
+                !"".equals(regData.getPassword()) &&
+                repeatPassword != null &&
+                !"".equals(repeatPassword);
+    }
+
+    /**
+     * removes Book by book Id
+     * @param request - current request
+     * @param userId - id of the User to be deleted
+     */
+    public UsersEntity deleteUser(HttpServletRequest request, Integer userId) {
+        UsersEntity user;
+        Session currentSession = null;
+        Transaction transaction = null;
+        try {
+            currentSession = util.getSession();
+            transaction = currentSession.beginTransaction();
+
+            user = userDao.getById(userId);
+            if (user != null) {
+                userDao.delete(user);
+                transaction.commit();
+                log.info("Delete user (commit)");
+            }
+        } catch (DaoException e) {
+            transaction.rollback();
+            ExceptionsHandler.processException(request, e);
+            return null;
+        } finally {
+            util.releaseSession(currentSession);
+        }
+        return user;
     }
 
     /**

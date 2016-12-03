@@ -86,7 +86,7 @@ public class BookService {
      * @param request - current request
      * @param bookId - id of the Book to be deleted
      */
-    public BooksEntity /*void*/ deleteBook(HttpServletRequest request, Integer bookId) {
+    public BooksEntity deleteBook(HttpServletRequest request, Integer bookId) {
         BooksEntity book;
         Session currentSession = null;
         Transaction transaction = null;
@@ -94,7 +94,7 @@ public class BookService {
             currentSession = util.getSession();
             transaction = currentSession.beginTransaction();
 
-            /*BooksEntity */book = bookDao.getById(bookId);
+            book = bookDao.getById(bookId);
             if (book != null) {
                 bookDao.delete(book);
                 transaction.commit();

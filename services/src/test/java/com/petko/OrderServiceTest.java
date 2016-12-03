@@ -7,7 +7,6 @@ import com.petko.dao.OrderDao;
 import com.petko.dao.UserDao;
 import com.petko.entities.*;
 import com.petko.services.OrderService;
-import com.petko.services.UserService;
 import com.petko.utils.HibernateUtilLibrary;
 import com.petko.vo.FullOrdersList;
 import org.hibernate.Session;
@@ -17,7 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
-import java.awt.print.Book;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +38,7 @@ public class OrderServiceTest {
         List<OrdersEntity> list = orderDao.getAbsolutelyAll();
         Set<Integer> orderIds = list.stream().map(OrdersEntity::getOrderId).collect(Collectors.toSet());
         Object[] ids = orderIds.toArray();
+        Arrays.sort(ids);
         return (int) ids[ids.length - 1];
     }
 

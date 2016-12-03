@@ -1,28 +1,59 @@
 package com.petko;
 
+import com.petko.dao.SeminarDao;
 import com.petko.entities.SeminarsEntity;
+import com.petko.entities.UsersEntity;
 import com.petko.services.SeminarService;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 
 public class SeminarServiceTest {
     public static SeminarService seminarService;
+    public static SeminarDao seminarDao;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
         seminarService = SeminarService.getInstance();
+        seminarDao = SeminarDao.getInstance();
         request = mock(HttpServletRequest.class);
+    }
+
+    private int getTheLastSeminarId() throws DaoException {
+        List<SeminarsEntity> list = seminarDao.getAbsolutelyAll();
+        Set<Integer> seminarIds = list.stream().map(SeminarsEntity::getSeminarId).collect(Collectors.toSet());
+        Object[] ids = seminarIds.toArray();
+        Arrays.sort(ids);
+        return (int) ids[ids.length - 1];
     }
 
     @Test(expected = NullPointerException.class)
     public void testAdd1() {
         seminarService.add(null, null);
+    }
+
+    @Test
+    public void testAdd2() throws DaoException {
+        SeminarsEntity newSeminar = new SeminarsEntity();
+        newSeminar.setSeminarDate(new Date());
+        newSeminar.setSubject("test");
+        newSeminar.setUsers(new HashSet<>());
+        seminarService.add(request, newSeminar);
+        int seminarId = getTheLastSeminarId();
+        UserServiceTest userServiceTest = new UserServiceTest();
+        UserServiceTest.init();
+        int userId = userServiceTest.getTheLastUserId();
+        UsersEntity usersEntity = userServiceTest.userDao.getById(userId);
+        String userLogin = usersEntity.getLogin();
+        seminarService.subscribeToSeminar(request, userLogin, seminarId);
+        seminarService.unSubscribeSeminar(request, userLogin, seminarId);
+        seminarService.delete(request, seminarId);
     }
 
     @Test

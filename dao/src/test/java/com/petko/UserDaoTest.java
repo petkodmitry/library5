@@ -6,9 +6,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UserDaoTest {
     public static UserDao userDao;
@@ -50,8 +48,12 @@ public class UserDaoTest {
 
     @Test
     public void testGetAll1() throws DaoException {
-        List<UsersEntity> list = userDao.getAll(-100, 0, "userId", "desc", null);
-        Assert.assertTrue(!list.isEmpty());
+        Map<String, String> map = new HashMap<>();
+        map.put("isAdmin", "true");
+        map.put("isBlocked", "false");
+        map.put("isAdmin", "qwerty");
+        List<UsersEntity> list = userDao.getAll(0, 5, "userId", "desc", map);
+        Assert.assertNotNull(list);
     }
 
     @Test

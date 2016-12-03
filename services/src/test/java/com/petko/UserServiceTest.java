@@ -1,5 +1,6 @@
 package com.petko;
 
+import com.petko.dao.UserDao;
 import com.petko.entities.UsersEntity;
 import com.petko.services.UserService;
 import static org.mockito.Mockito.*;
@@ -8,16 +9,30 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserServiceTest {
     public static UserService userService;
+    public static UserDao userDao;
     public static HttpServletRequest request;
 
     @BeforeClass
     public static void init() {
         userService = UserService.getInstance();
+        userDao = UserDao.getInstance();
         request = mock(HttpServletRequest.class);
+    }
+
+    public int getTheLastUserId() throws DaoException {
+        List<UsersEntity> list = userDao.getAbsolutelyAll();
+        Set<Integer> userIds = list.stream().map(UsersEntity::getUserId).collect(Collectors.toSet());
+        Object[] ids = userIds.toArray();
+        Arrays.sort(ids);
+        return (int) ids[ids.length - 1];
     }
 
     @Test(expected = NullPointerException.class)
@@ -25,15 +40,32 @@ public class UserServiceTest {
         userService.add(null, null);
     }
 
+    @Test
+    public void testAdd2() throws DaoException {
+        UsersEntity usersEntity = new UsersEntity();
+        usersEntity.setFirstName("test");
+        usersEntity.setLastName("test");
+        usersEntity.setLogin("test");
+        usersEntity.setPassword("123456789");
+        usersEntity.setIsAdmin(false);
+        usersEntity.setIsBlocked(false);
+        usersEntity.setSeminars(new HashSet<>());
+        userService.add(request, usersEntity);
+        int id = getTheLastUserId();
+        usersEntity = userDao.getById(id);
+        userService.setBlockUser(request, usersEntity.getLogin(), true);
+        userService.deleteUser(request, id);
+    }
+
     @Test(expected = NullPointerException.class)
     public void testGetAll1() {
         userService.getAll(null/*, null, 0*/);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testGetAll2() {
         List<UsersEntity> list = userService.getAll(request/*, "1", 1*/);
-        Assert.assertTrue(!list.isEmpty());
+        Assert.assertNull(list);
     }
 
     @Test (expected = NullPointerException.class)
@@ -59,15 +91,39 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testIsAdminUser() {
+    public void testIsLoginSuccess3() throws DaoException {
+        int userId = getTheLastUserId();
+        UsersEntity entity = userDao.getById(userId);
+        boolean result = userService.isLoginSuccess(request, entity.getLogin(), entity.getPassword());
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testIsAdminUser1() {
         boolean result = userService.isAdminUser(null, null);
         Assert.assertTrue(!result);
     }
 
     @Test
-    public void testIsLoginExists() {
+    public void testIsAdminUser2() throws DaoException {
+        int userId = getTheLastUserId();
+        UsersEntity entity = userDao.getById(userId);
+        boolean result = userService.isAdminUser(request, entity.getLogin());
+        Assert.assertTrue(!result);
+    }
+
+    @Test
+    public void testIsLoginExists1() {
         boolean result = userService.isLoginExists(null, null);
         Assert.assertTrue(!result);
+    }
+
+    @Test
+    public void testIsLoginExists2() throws DaoException {
+        int userId = getTheLastUserId();
+        UsersEntity entity = userDao.getById(userId);
+        boolean result = userService.isLoginExists(request, entity.getLogin());
+        Assert.assertTrue(result);
     }
 
     @Test
@@ -83,7 +139,13 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSetBlockUser() {
+    public void testIsAllPasswordRulesFollowed3() {
+        boolean result = userService.isAllPasswordRulesFollowed("123456789", "123456789");
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testSetBlockUser1() {
         userService.setBlockUser(null, null, false);
     }
 
@@ -133,8 +195,8 @@ public class UserServiceTest {
         entity.setFirstName("f");
         entity.setLastName("l");
         entity.setLogin("login");
-        entity.setPassword("psw");
-        boolean result = userService.isAllRegisterDataEntered(entity, "psw");
+        entity.setPassword("123456789");
+        boolean result = userService.isAllRegisterDataEntered(entity, "123456789");
         Assert.assertTrue(result);
     }
 
@@ -154,5 +216,11 @@ public class UserServiceTest {
         Assert.assertTrue(entity.getFirstName().equals("f") && entity.getLastName().equals("l") &&
                 entity.getLogin().equals("login") && entity.getPassword().equals("psw") &&
                 entity.getIsAdmin() && entity.getIsBlocked());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testActiveUsers() {
+        ActiveUsers.addUser("testLogin");
+        userService.logOut(request, "testLogin");
     }
 }
